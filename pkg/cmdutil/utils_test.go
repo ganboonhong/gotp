@@ -1,4 +1,4 @@
-package gotp
+package cmdutil
 
 import (
 	"testing"

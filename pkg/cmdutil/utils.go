@@ -1,12 +1,20 @@
-package gotp
+package cmdutil
 
 import (
 	"fmt"
 	"math/rand"
 	"net/url"
+	"os"
 	"strings"
 	"time"
+
+	"github.com/joho/godotenv"
 )
+
+type Config struct {
+	DbUser     string
+	DbPassword string
+}
 
 const (
 	OtpTypeTotp = "totp"
@@ -61,7 +69,7 @@ func BuildUri(otpType, secret, accountName, issuerName, algorithm string, initia
 }
 
 // get current timestamp
-func currentTimestamp() int {
+func CurrentTimestamp() int {
 	return int(time.Now().Unix())
 }
 
@@ -87,4 +95,30 @@ func RandomSecret(length int) string {
 	}
 
 	return string(bytes)
+}
+
+func GetConfig() Config {
+	godotenv.Load()
+
+	return Config{
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+	}
+}
+
+func GetConfigTest() Config {
+	return Config{
+		DbUser:     "johndoe",
+		DbPassword: "Pwd1234!!",
+	}
+}
+
+type Factory struct {
+	GetConfig func() Config
+}
+
+func NewFactory() *Factory {
+	return &Factory{
+		GetConfig,
+	}
 }
