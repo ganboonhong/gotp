@@ -18,6 +18,7 @@ var (
 // Execute executes the root command.
 func Execute() error {
 	f := cmdutil.NewFactory()
+
 	rootCmd.AddCommand(genCmd.New(f))
 	rootCmd.AddCommand(dbCmd.New())
 
