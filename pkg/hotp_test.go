@@ -15,6 +15,6 @@ func TestHOTP_At(t *testing.T) {
 
 func TestHOTP_Verify(t *testing.T) {
 	if !hotp.Verify("194001", 12345) {
-		t.Error("verify faild")
+		t.Error("verify failed")
 	}
 }

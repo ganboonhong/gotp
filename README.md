@@ -31,7 +31,7 @@ totp.Verify('492039', 1524486261)  // true
 totp.Verify('492039', 1520000000)  // false
 
 // generate a provisioning uri
-totp.ProvisioningUri("demoAccountName", "issuerName")
+totp.ProvisioningURI("demoAccountName", "issuerName")
 // otpauth://totp/issuerName:demoAccountName?secret=4S62BZNFXXSZLCRO&issuer=issuerName
 ```
 
@@ -47,7 +47,7 @@ hotp.Verify('944181', 0)  // true
 hotp.Verify('944181', 1)  // false
 
 // generate a provisioning uri
-hotp.ProvisioningUri("demoAccountName", "issuerName", 1)
+hotp.ProvisioningURI("demoAccountName", "issuerName", 1)
 // otpauth://hotp/issuerName:demoAccountName?secret=4S62BZNFXXSZLCRO&counter=1&issuer=issuerName
 ```
 
@@ -55,21 +55,21 @@ hotp.ProvisioningUri("demoAccountName", "issuerName", 1)
 
 ```Go
 secretLength := 16
-gotp.RandomSecret(secretLength) // LMT4URYNZKEWZRAA
+cmdutil.RandomSecret(secretLength) // LMT4URYNZKEWZRAA
 ```
 
 ### Google Authenticator Compatible
 
 GOTP works with the Google Authenticator iPhone and Android app, as well as other OTP apps like Authy.
 GOTP includes the ability to generate provisioning URIs for use with the QR Code
-scanner built into these MFA client apps via `otpObj.ProvisioningUri` method:
+scanner built into these MFA client apps via `otpObj.ProvisioningURI` method:
 
 ```Go
-gotp.NewDefaultTOTP("4S62BZNFXXSZLCRO").ProvisioningUri("demoAccountName", "issuerName")
+gotp.NewDefaultTOTP("4S62BZNFXXSZLCRO").ProvisioningURI("demoAccountName", "issuerName")
 // otpauth://totp/issuerName:demoAccountName?secret=4S62BZNFXXSZLCRO&issuer=issuerName
 
 
-gotp.NewDefaultHOTP("4S62BZNFXXSZLCRO").ProvisioningUri("demoAccountName", "issuerName", 1)
+gotp.NewDefaultHOTP("4S62BZNFXXSZLCRO").ProvisioningURI("demoAccountName", "issuerName", 1)
 // otpauth://hotp/issuerName:demoAccountName?secret=4S62BZNFXXSZLCRO&counter=1&issuer=issuerName
 ```
 
