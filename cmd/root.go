@@ -20,7 +20,7 @@ func Execute() error {
 	f := cmdutil.NewFactory()
 
 	rootCmd.AddCommand(genCmd.New(f))
-	rootCmd.AddCommand(dbCmd.New())
+	rootCmd.AddCommand(dbCmd.New(f))
 
 	return rootCmd.Execute()
 }
