@@ -29,7 +29,7 @@ func (r *repo) Store(u *User) (int, error) {
 
 	stmt, err := tx.Prepare(`
 		INSERT INTO ` + Table + `
-		(name, password, created_at)
+		(name, created_at)
 		VALUES (?, ?, datetime('now'))
 	`)
 	if err != nil {
@@ -37,7 +37,7 @@ func (r *repo) Store(u *User) (int, error) {
 	}
 	defer stmt.Close()
 
-	result, err := stmt.Exec(u.Name, u.Password)
+	result, err := stmt.Exec(u.Name)
 	if err != nil {
 		return 0, err
 	}
