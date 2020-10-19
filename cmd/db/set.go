@@ -1,13 +1,19 @@
 package db
 
 import (
+	"database/sql"
+	"fmt"
+
 	survey "github.com/AlecAivazis/survey/v2"
+	"github.com/ganboonhong/gotp/pkg/cmdutil"
+	"github.com/ganboonhong/gotp/pkg/user"
 	"github.com/joho/godotenv"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/spf13/cobra"
 )
 
 // NewSetCommand sets database username and password in .env file
-func NewSetCommand() *cobra.Command {
+func NewSetCommand(f *cmdutil.Factory) *cobra.Command {
 	return &cobra.Command{
 		Use:   "set",
 		Short: "Setup database username and password",
@@ -20,38 +26,42 @@ func NewSetCommand() *cobra.Command {
 						Message: "Please key in your username",
 					},
 				},
-				{
-					Name: "password",
-					Prompt: &survey.Password{
-						Message: "Please key in your password",
-					},
-				},
-				{
-					Name: "repeat password",
-					Prompt: &survey.Password{
-						Message: "Please repeat your password",
-					},
-				},
 			}
 			ans := struct {
 				Username string
-				Password string
-				Confirm  string
 			}{}
 
 			survey.Ask(qs, &ans)
 
-			// TODO: compare passwords
-
 			envVars := map[string]string{
-				"DB_USER":     ans.Username,
-				"DB_PASSWORD": ans.Password,
+				"DB_USER": ans.Username,
 			}
 			err := godotenv.Write(envVars, ".env")
 			if err != nil {
 				return err
 			}
+
+			dbPath := "./data/db.sqlite"
+			// os.Remove(dbPath)
+
+			db, err := sql.Open("sqlite3", dbPath)
+			if err != nil {
+				return err
+			}
+
+			defer db.Close()
+
+			repo := user.NewRepo(db)
+			u := &user.User{
+				Name: ans.Username,
+			}
+			id, err := repo.Store(u)
+			if err != nil {
+				return err
+			}
+			fmt.Println(id)
 			return nil
+
 		},
 	}
 }
