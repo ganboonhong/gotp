@@ -1,8 +1,8 @@
-package db
+package user
 
 import (
 	"database/sql"
-	"fmt"
+	"log"
 
 	survey "github.com/AlecAivazis/survey/v2"
 	"github.com/ganboonhong/gotp/pkg/cmdutil"
@@ -12,13 +12,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// NewSetCommand sets database username and password in .env file
-func NewSetCommand(f *cmdutil.Factory) *cobra.Command {
+// NewCreateCommand creates new user
+func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 	return &cobra.Command{
-		Use:   "set",
-		Short: "Setup database username and password",
+		Use:   "create",
+		Short: "Create new user",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// todo: update single key
 			qs := []*survey.Question{
 				{
 					Name: "username",
@@ -26,12 +25,43 @@ func NewSetCommand(f *cmdutil.Factory) *cobra.Command {
 						Message: "Please key in your username",
 					},
 				},
+				{
+					Name: "Enable Cloud Backup",
+					Prompt: &survey.Confirm{
+						Message: "Enable Backup on Private Cloud Drive?",
+					},
+				},
 			}
 			ans := struct {
-				Username string
+				Username     string
+				EnableBackup bool
 			}{}
 
 			survey.Ask(qs, &ans)
+			log.Println(ans.EnableBackup)
+
+			if ans.EnableBackup {
+				var cloudDrive string
+				googleDrive := "Google Drive"
+				oneDrive := "One Drive"
+				prompt := &survey.Select{
+					Message: "Select cloud storage",
+					Options: []string{
+						googleDrive,
+						oneDrive,
+						"Cancel",
+					},
+				}
+				survey.AskOne(prompt, &cloudDrive)
+
+				if cloudDrive == googleDrive {
+
+					log.Println("Google Drive token granted")
+				} else if cloudDrive == oneDrive {
+					// get one drive token
+					log.Println("One Drive token granted")
+				}
+			}
 
 			envVars := map[string]string{
 				"DB_USER": ans.Username,
@@ -59,9 +89,8 @@ func NewSetCommand(f *cmdutil.Factory) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			fmt.Println(id)
+			log.Printf("User %s (id: %d) created", ans.Username, id)
 			return nil
-
 		},
 	}
 }

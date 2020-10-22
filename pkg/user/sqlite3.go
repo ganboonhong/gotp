@@ -30,7 +30,7 @@ func (r *repo) Store(u *User) (int, error) {
 	stmt, err := tx.Prepare(`
 		INSERT INTO ` + Table + `
 		(name, created_at)
-		VALUES (?, ?, datetime('now'))
+		VALUES (?, datetime('now'))
 	`)
 	if err != nil {
 		return 0, err

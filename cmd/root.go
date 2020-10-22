@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	dbCmd "github.com/ganboonhong/gotp/cmd/db"
 	genCmd "github.com/ganboonhong/gotp/cmd/generate"
+	userCmd "github.com/ganboonhong/gotp/cmd/user"
 	"github.com/ganboonhong/gotp/pkg/cmdutil"
 	"github.com/spf13/cobra"
 )
@@ -20,7 +20,7 @@ func Execute() error {
 	f := cmdutil.NewFactory()
 
 	rootCmd.AddCommand(genCmd.New(f))
-	rootCmd.AddCommand(dbCmd.New(f))
+	rootCmd.AddCommand(userCmd.New(f))
 
 	return rootCmd.Execute()
 }
