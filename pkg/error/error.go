@@ -11,7 +11,7 @@ func NoAccount() string {
 	msg := heredoc.Doc(`
 		Please set your database __username__ and __password__ with:
 		~~~js
-		$ gotp db set
+		$ gotp user create
 		~~~
 	`)
 	msg, _ = glamour.Render(msg, "dark")

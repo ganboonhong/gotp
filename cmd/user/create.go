@@ -20,27 +20,28 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			qs := []*survey.Question{
 				{
-					Name: "username",
+					Name: "Username",
 					Prompt: &survey.Input{
 						Message: "Please key in your username",
 					},
 				},
 				{
-					Name: "Enable Cloud Backup",
+					Name: "EnableBackup",
 					Prompt: &survey.Confirm{
 						Message: "Enable Backup on Private Cloud Drive?",
+						Default: true,
 					},
 				},
 			}
-			ans := struct {
+			answer := struct {
 				Username     string
 				EnableBackup bool
 			}{}
 
-			survey.Ask(qs, &ans)
-			log.Println(ans.EnableBackup)
+			survey.Ask(qs, &answer)
+			log.Println(answer)
 
-			if ans.EnableBackup {
+			if answer.EnableBackup {
 				var cloudDrive string
 				googleDrive := "Google Drive"
 				oneDrive := "One Drive"
@@ -64,14 +65,14 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 			}
 
 			envVars := map[string]string{
-				"DB_USER": ans.Username,
+				"DB_USER": answer.Username,
 			}
 			err := godotenv.Write(envVars, ".env")
 			if err != nil {
 				return err
 			}
 
-			dbPath := "./data/db.sqlite"
+			dbPath := "data/db.sqlite"
 			// os.Remove(dbPath)
 
 			db, err := sql.Open("sqlite3", dbPath)
@@ -83,13 +84,13 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 
 			repo := user.NewRepo(db)
 			u := &user.User{
-				Name: ans.Username,
+				Name: answer.Username,
 			}
 			id, err := repo.Store(u)
 			if err != nil {
 				return err
 			}
-			log.Printf("User %s (id: %d) created", ans.Username, id)
+			log.Printf("User %s (id: %d) created", answer.Username, id)
 			return nil
 		},
 	}

@@ -3,7 +3,7 @@ module github.com/ganboonhong/gotp
 go 1.14
 
 require (
-	github.com/AlecAivazis/survey/v2 v2.1.1
+	github.com/AlecAivazis/survey/v2 v2.2.2
 	github.com/MakeNowJust/heredoc v1.0.0
 	github.com/charmbracelet/glamour v0.2.0
 	github.com/golang-migrate/migrate v3.5.4+incompatible // indirect
