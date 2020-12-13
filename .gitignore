@@ -16,3 +16,8 @@
 .idea
 
 data/*
+
+# Database files
+*.sqlite
+
+.env

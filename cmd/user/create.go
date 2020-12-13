@@ -1,7 +1,6 @@
 package user
 
 import (
-	"database/sql"
 	"log"
 
 	survey "github.com/AlecAivazis/survey/v2"
@@ -10,6 +9,8 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/spf13/cobra"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 // NewCreateCommand creates new user
@@ -72,21 +73,20 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 				return err
 			}
 
-			dbPath := "data/db.sqlite"
+			dsn := "data/db.sqlite"
 			// os.Remove(dbPath)
 
-			db, err := sql.Open("sqlite3", dbPath)
+			db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
+
 			if err != nil {
 				return err
 			}
-
-			defer db.Close()
 
 			repo := user.NewRepo(db)
 			u := &user.User{
 				Name: answer.Username,
 			}
-			id, err := repo.Store(u)
+			id, err := repo.Create(u)
 			if err != nil {
 				return err
 			}

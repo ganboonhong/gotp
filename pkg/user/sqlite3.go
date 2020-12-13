@@ -1,57 +1,50 @@
 package user
 
 import (
-	"database/sql"
 	"fmt"
+
+	"gorm.io/gorm"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
 type repo struct {
-	db *sql.DB
+	db *gorm.DB
 }
 
-func NewRepo(db *sql.DB) Repository {
+func NewRepo(db *gorm.DB) Repository {
 	return &repo{
 		db: db,
 	}
 }
 
 func (r *repo) Find(id int) (u *User, err error) {
-	return &User{}, nil
+	result := &User{}
+	r.db.First(result, uint(id))
+	return result, nil
 }
 
-func (r *repo) Store(u *User) (int, error) {
-	tx, err := r.db.Begin()
-	if err != nil {
-		return 0, err
+func (r *repo) Create(u *User) (int, error) {
+	tx := r.db.Begin()
+	if tx.Error != nil {
+		return 0, tx.Error
 	}
 
-	stmt, err := tx.Prepare(`
-		INSERT INTO ` + Table + `
-		(name, created_at)
-		VALUES (?, datetime('now'))
-	`)
-	if err != nil {
-		return 0, err
-	}
-	defer stmt.Close()
-
-	result, err := stmt.Exec(u.Name)
-	if err != nil {
-		return 0, err
+	result := r.db.Create(u)
+	if result.Error != nil {
+		tx.Rollback()
+		return 0, result.Error
 	}
 
-	id, err := result.LastInsertId()
-	fmt.Println(id)
-	if err != nil {
-		return 0, err
+	fmt.Println(u.ID)
+	db := tx.Commit()
+	if db.Error != nil {
+		return 0, db.Error
 	}
 
-	err = tx.Commit()
-	if err != nil {
-		return 0, err
-	}
+	return int(u.ID), nil
+}
 
-	return int(id), nil
+func (r *repo) Delete(id int) *gorm.DB {
+	return r.db.Delete(&User{}, uint(id))
 }
