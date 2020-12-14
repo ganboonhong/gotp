@@ -1,8 +1,6 @@
 package user
 
 import (
-	"fmt"
-
 	"gorm.io/gorm"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -20,29 +18,43 @@ func NewRepo(db *gorm.DB) Repository {
 
 func (r *repo) Find(id int) (u *User, err error) {
 	result := &User{}
-	r.db.First(result, uint(id))
+	db := r.db.First(result, uint(id))
+	if db.Error != nil {
+		return nil, db.Error
+	}
 	return result, nil
 }
 
-func (r *repo) Create(u *User) (int, error) {
+func (r *repo) Create(u *User) (*User, error) {
 	tx := r.db.Begin()
 	if tx.Error != nil {
-		return 0, tx.Error
+		return nil, tx.Error
 	}
 
 	result := r.db.Create(u)
 	if result.Error != nil {
 		tx.Rollback()
-		return 0, result.Error
+		return nil, result.Error
 	}
 
-	fmt.Println(u.ID)
 	db := tx.Commit()
 	if db.Error != nil {
-		return 0, db.Error
+		return nil, db.Error
 	}
 
-	return int(u.ID), nil
+	return u, nil
+}
+
+func (r *repo) Update(u *User) (*User, error) {
+	db := r.db.Model(u).Updates(User{
+		Name: u.Name,
+	})
+
+	if db.Error != nil {
+		return nil, db.Error
+	}
+
+	return u, nil
 }
 
 func (r *repo) Delete(id int) *gorm.DB {
