@@ -15,4 +15,6 @@ type Writer interface {
 type Repository interface {
 	Reader
 	Writer
+	Db() *gorm.DB
+	SetTransaction(*gorm.DB)
 }
