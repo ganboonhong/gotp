@@ -1,8 +1,6 @@
 package user
 
 import (
-	"fmt"
-
 	"gorm.io/gorm"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -10,41 +8,52 @@ import (
 
 type repo struct {
 	db *gorm.DB
+	tx *gorm.DB
+}
+
+func (r *repo) Create(u *User) (*User, error) {
+	if err := r.tx.Create(u).Error; err != nil {
+		return nil, err
+	}
+	return u, nil
+}
+
+func (r *repo) Db() *gorm.DB {
+	return r.db
+}
+
+func (r *repo) Find(id int) (u *User, err error) {
+	u = &User{}
+	db := r.tx.First(u, uint(id))
+	if db.Error != nil {
+		return nil, db.Error
+	}
+	return u, nil
 }
 
 func NewRepo(db *gorm.DB) Repository {
 	return &repo{
 		db: db,
+		tx: nil,
 	}
 }
 
-func (r *repo) Find(id int) (u *User, err error) {
-	result := &User{}
-	r.db.First(result, uint(id))
-	return result, nil
+func (r *repo) SetTransaction(tx *gorm.DB) {
+	r.tx = tx
 }
 
-func (r *repo) Create(u *User) (int, error) {
-	tx := r.db.Begin()
-	if tx.Error != nil {
-		return 0, tx.Error
-	}
+func (r *repo) Update(u *User) (*User, error) {
+	db := r.tx.Model(u).Updates(User{
+		Name: u.Name,
+	})
 
-	result := r.db.Create(u)
-	if result.Error != nil {
-		tx.Rollback()
-		return 0, result.Error
-	}
-
-	fmt.Println(u.ID)
-	db := tx.Commit()
 	if db.Error != nil {
-		return 0, db.Error
+		return nil, db.Error
 	}
 
-	return int(u.ID), nil
+	return u, nil
 }
 
 func (r *repo) Delete(id int) *gorm.DB {
-	return r.db.Delete(&User{}, uint(id))
+	return r.tx.Delete(&User{}, uint(id))
 }

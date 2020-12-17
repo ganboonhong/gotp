@@ -86,11 +86,11 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 			u := &user.User{
 				Name: answer.Username,
 			}
-			id, err := repo.Create(u)
+			u, err = repo.Create(u)
 			if err != nil {
 				return err
 			}
-			log.Printf("User %s (id: %d) created", answer.Username, id)
+			log.Printf("User %s (id: %d) created", u.Name, u.ID)
 			return nil
 		},
 	}

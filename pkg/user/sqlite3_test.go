@@ -14,11 +14,9 @@ import (
 )
 
 var (
-	dsn       = "test.sqlite"
-	gormDB, _ = gorm.Open(sqlite.Open(dsn), &gorm.Config{})
-	suiteRepo = NewRepo(gormDB)
-	t         *testing.T
-	rq        *require.Assertions
+	dsn = "test.sqlite"
+	t   *testing.T
+	rq  *require.Assertions
 )
 
 type UserSuite struct {
@@ -37,24 +35,37 @@ func (suite *UserSuite) SetupSuite() {
 	rq = suite.Require()
 }
 
-func (suite *UserSuite) TestCreateFindUser() {
-	// create
-	u := &User{Name: "Test"}
-	newUserId, err := suiteRepo.Create(u)
-	rq.NoError(err)
-	suite.Equal(1, newUserId)
+// TestCRUDUser tests (C)reate, (R)ead, (U)pdate, (D)elete user entity
+func (suite *UserSuite) TestCRUDUser() {
+	gormDB, _ := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
+	suiteRepo := NewRepo(gormDB)
+	db := suiteRepo.Db()
 
-	// find
-	u, err = suiteRepo.Find(1)
-	require.NoError(t, err)
-	suite.Equal(uint(1), u.ID)
-}
+	db.Transaction(func(tx *gorm.DB) error {
+		suiteRepo.SetTransaction(tx)
+		// create
+		u := &User{Name: "Test"}
+		u, err := suiteRepo.Create(u)
+		rq.NoError(err)
+		suite.Equal(1, int(u.ID))
 
-func (suite *UserSuite) TestDeleteUser() {
-	gormDB, _ = gorm.Open(sqlite.Open(dsn), &gorm.Config{})
-	suiteRepo = NewRepo(gormDB)
-	tx := suiteRepo.Delete(1)
-	suite.Equal(1, int(tx.RowsAffected))
+		// find
+		u, err = suiteRepo.Find(1)
+		require.NoError(t, err)
+		suite.Equal(uint(1), u.ID)
+
+		// update
+		expected := "Test2"
+		u.Name = expected
+		actualUser, err := suiteRepo.Update(u)
+		suite.Equal(expected, actualUser.Name)
+
+		// delete
+		execution := suiteRepo.Delete(1)
+		suite.Equal(1, int(execution.RowsAffected))
+		require.NoError(t, execution.Error)
+		return nil
+	})
 }
 
 func TestSuite(t *testing.T) {
