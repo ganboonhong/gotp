@@ -86,10 +86,16 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 			u := &user.User{
 				Name: answer.Username,
 			}
-			u, err = repo.Create(u)
-			if err != nil {
-				return err
-			}
+
+			db.Transaction(func(tx *gorm.DB) error {
+				repo.SetTransaction(tx)
+				u, err = repo.Create(u)
+				if err != nil {
+					return err
+				}
+				return nil
+			})
+
 			log.Printf("User %s (id: %d) created", u.Name, u.ID)
 			return nil
 		},
