@@ -34,7 +34,7 @@ func (r *repo) Find(id int) (u *User, err error) {
 func NewRepo(db *gorm.DB) Repository {
 	return &repo{
 		db: db,
-		tx: nil,
+		tx: db,
 	}
 }
 
