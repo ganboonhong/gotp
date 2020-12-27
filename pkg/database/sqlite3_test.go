@@ -1,9 +1,10 @@
-package user
+package database
 
 import (
 	"os"
 	"testing"
 
+	"github.com/ganboonhong/gotp/pkg/user"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/sqlite3"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -38,30 +39,31 @@ func (suite *UserSuite) SetupSuite() {
 // TestCRUDUser tests (C)reate, (R)ead, (U)pdate, (D)elete user entity
 func (suite *UserSuite) TestCRUDUser() {
 	gormDB, _ := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
-	suiteRepo := NewRepo(gormDB)
-	db := suiteRepo.Db()
+	suiteRepo := NewDb(gormDB)
+	db := suiteRepo.getDb()
 
 	db.Transaction(func(tx *gorm.DB) error {
 		suiteRepo.SetTransaction(tx)
 		// create
-		u := &User{Name: "Test"}
-		u, err := suiteRepo.Create(u)
+		u := &user.User{Name: "Test"}
+		err := suiteRepo.Create(&u)
 		rq.NoError(err)
 		suite.Equal(1, int(u.ID))
 
 		// find
-		u, err = suiteRepo.Find(1)
+		u = &user.User{}
+		err = suiteRepo.Find(1, u)
 		require.NoError(t, err)
 		suite.Equal(uint(1), u.ID)
 
 		// update
 		expected := "Test2"
 		u.Name = expected
-		actualUser, err := suiteRepo.Update(u)
-		suite.Equal(expected, actualUser.Name)
+		err = suiteRepo.Update(u)
+		suite.Equal(expected, u.Name)
 
 		// delete
-		execution := suiteRepo.Delete(1)
+		execution := suiteRepo.Delete(user.User{}, 1)
 		suite.Equal(1, int(execution.RowsAffected))
 		require.NoError(t, execution.Error)
 		return nil

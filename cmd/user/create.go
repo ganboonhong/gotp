@@ -5,6 +5,7 @@ import (
 
 	survey "github.com/AlecAivazis/survey/v2"
 	"github.com/ganboonhong/gotp/pkg/cmdutil"
+	"github.com/ganboonhong/gotp/pkg/database"
 	"github.com/ganboonhong/gotp/pkg/user"
 	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
@@ -82,12 +83,12 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 				return err
 			}
 
-			repo := user.NewRepo(db)
+			repo := database.NewDb(db)
 			u := &user.User{
 				Name: answer.Username,
 			}
 
-			u, err = repo.Create(u)
+			err = repo.Create(u)
 			if err != nil {
 				return err
 			}
