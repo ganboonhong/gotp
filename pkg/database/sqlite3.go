@@ -6,10 +6,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-type database struct {
-	tx *gorm.DB
-}
-
 func (db *database) Create(value interface{}) error {
 	if err := db.tx.Create(value).Error; err != nil {
 		return err
@@ -27,12 +23,6 @@ func (db *database) Find(id int, i interface{}) error {
 		return tx.Error
 	}
 	return nil
-}
-
-func NewDb(db *gorm.DB) *database {
-	return &database{
-		tx: db,
-	}
 }
 
 func (db *database) SetTransaction(tx *gorm.DB) {

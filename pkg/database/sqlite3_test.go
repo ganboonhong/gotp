@@ -39,7 +39,10 @@ func (suite *UserSuite) SetupSuite() {
 // TestCRUDUser tests (C)reate, (R)ead, (U)pdate, (D)elete user entity
 func (suite *UserSuite) TestCRUDUser() {
 	gormDB, _ := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
-	suiteRepo := NewDb(gormDB)
+	config := &Config{
+		Database: gormDB,
+	}
+	suiteRepo := NewDb(config)
 	db := suiteRepo.getDb()
 
 	db.Transaction(func(tx *gorm.DB) error {

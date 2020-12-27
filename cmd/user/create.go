@@ -10,8 +10,6 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/spf13/cobra"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
 
 // NewCreateCommand creates new user
@@ -74,21 +72,12 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 				return err
 			}
 
-			dsn := "data/db.sqlite"
-			// os.Remove(dbPath)
-
-			db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
-
-			if err != nil {
-				return err
-			}
-
-			repo := database.NewDb(db)
+			db := database.NewDb(&database.Config{})
 			u := &user.User{
 				Name: answer.Username,
 			}
 
-			err = repo.Create(u)
+			err = db.Create(u)
 			if err != nil {
 				return err
 			}
