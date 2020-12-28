@@ -20,9 +20,9 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			qs := []*survey.Question{
 				{
-					Name: "Username",
+					Name: "Account",
 					Prompt: &survey.Input{
-						Message: "Please key in your username",
+						Message: "Please key in your account name",
 					},
 				},
 				{
@@ -34,7 +34,7 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 				},
 			}
 			answer := struct {
-				Username     string
+				Account      string
 				EnableBackup bool
 			}{}
 
@@ -65,7 +65,7 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 			}
 
 			envVars := map[string]string{
-				"DB_USER": answer.Username,
+				"DB_USER": answer.Account,
 			}
 			err := godotenv.Write(envVars, ".env")
 			if err != nil {
@@ -74,7 +74,7 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 
 			db := database.NewDb(&database.Config{})
 			u := &user.User{
-				Name: answer.Username,
+				Account: answer.Account,
 			}
 
 			err = db.Create(u)
@@ -82,7 +82,7 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 				return err
 			}
 
-			log.Printf("User %s (id: %d) created", u.Name, u.ID)
+			log.Printf("User %s (id: %d) created", u.Account, u.ID)
 			return nil
 		},
 	}
