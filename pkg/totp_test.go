@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/ganboonhong/gotp/pkg/cmdutil"
+	"github.com/ganboonhong/gotp/pkg/parameter"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -27,7 +28,7 @@ func TestTOTP_NowWithExpiration(t *testing.T) {
 	if otp != totp.Now() {
 		t.Error("TOTP generate otp error!")
 	}
-	if totp.At(cts+DefaultInterval) != totp.At(int(exp)) {
+	if totp.At(cts+parameter.DefaultInterval) != totp.At(int(exp)) {
 		t.Error("TOTP expiration otp error!")
 	}
 }

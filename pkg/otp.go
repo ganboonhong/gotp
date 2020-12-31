@@ -9,6 +9,7 @@ import (
 	"math"
 
 	"github.com/ganboonhong/gotp/pkg/cmdutil"
+	"github.com/ganboonhong/gotp/pkg/parameter"
 )
 
 type Hasher struct {
@@ -25,7 +26,7 @@ type OTP struct {
 func NewOTP(secret string, digits int, hasher *Hasher) OTP {
 	if hasher == nil {
 		hasher = &Hasher{
-			HashName: "sha1",
+			HashName: parameter.DefaultAlgorithm,
 			Digest:   sha1.New,
 		}
 	}

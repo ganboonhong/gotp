@@ -62,6 +62,7 @@ func generate(f *cmdutil.Factory, chooseType bool) (string, error) {
 
 	if OTPType == 0 {
 		otp := gotp.NewDefaultTOTP("MCWFKC6VWWVIDGYC4ZULRKSLQWC7GROF")
+		// otp := gotp.NewDefaultTOTP("MCWFKC6VWWVIDGYC4ZULRKSLQWC7GROF")
 		msg = fmt.Sprintf("Your OTP: %s", otp.Now())
 	} else {
 		msg = "HOTP not implemented yet"

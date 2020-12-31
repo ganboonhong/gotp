@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/ganboonhong/gotp/pkg/cmdutil"
+	"github.com/ganboonhong/gotp/pkg/parameter"
 )
 
 // time-based OTP counters.
@@ -12,17 +13,13 @@ type TOTP struct {
 	interval int
 }
 
-// DefaultInterval is the period parameter defines a period that a TOTP code will be valid for, in seconds.
-// ref: https://github.com/google/google-authenticator/wiki/Key-Uri-Format#period
-const DefaultInterval = 30
-
 func NewTOTP(secret string, digits, interval int, hasher *Hasher) *TOTP {
 	otp := NewOTP(secret, digits, hasher)
 	return &TOTP{OTP: otp, interval: interval}
 }
 
 func NewDefaultTOTP(secret string) *TOTP {
-	return NewTOTP(secret, 6, DefaultInterval, nil)
+	return NewTOTP(secret, parameter.DefaultDigits, parameter.DefaultInterval, nil)
 }
 
 // Generate time OTP of given timestamp
