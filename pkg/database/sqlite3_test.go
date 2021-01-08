@@ -1,11 +1,10 @@
 package database
 
 import (
-	"os"
 	"testing"
 
+	"github.com/ganboonhong/gotp/pkg/testutil"
 	"github.com/ganboonhong/gotp/pkg/user"
-	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/sqlite3"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/stretchr/testify/require"
@@ -15,9 +14,8 @@ import (
 )
 
 var (
-	dsn = "test.sqlite"
-	t   *testing.T
-	rq  *require.Assertions
+	t  *testing.T
+	rq *require.Assertions
 )
 
 type UserSuite struct {
@@ -25,12 +23,7 @@ type UserSuite struct {
 }
 
 func (suite *UserSuite) SetupSuite() {
-	os.Remove(dsn)
-	m, _ := migrate.New(
-		"file://../../migration",
-		"sqlite3://"+dsn,
-	)
-	m.Steps(1)
+	testutil.SetupDB()
 
 	t = suite.T()
 	rq = suite.Require()
@@ -38,7 +31,7 @@ func (suite *UserSuite) SetupSuite() {
 
 // TestCRUDUser tests (C)reate, (R)ead, (U)pdate, (D)elete user entity
 func (suite *UserSuite) TestCRUDUser() {
-	gormDB, _ := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
+	gormDB, _ := gorm.Open(sqlite.Open(testutil.DSN), &gorm.Config{})
 	config := &Config{
 		Database: gormDB,
 	}
@@ -48,7 +41,10 @@ func (suite *UserSuite) TestCRUDUser() {
 	db.Transaction(func(tx *gorm.DB) error {
 		suiteRepo.SetTransaction(tx)
 		// create
-		u := &user.User{Name: "Test"}
+		u := &user.User{
+			Account:  "Test",
+			Password: "HashedPasswordxxoo%%",
+		}
 		err := suiteRepo.Create(&u)
 		rq.NoError(err)
 		suite.Equal(1, int(u.ID))
@@ -61,9 +57,9 @@ func (suite *UserSuite) TestCRUDUser() {
 
 		// update
 		expected := "Test2"
-		u.Name = expected
+		u.Account = expected
 		err = suiteRepo.Update(u)
-		suite.Equal(expected, u.Name)
+		suite.Equal(expected, u.Account)
 
 		// delete
 		execution := suiteRepo.Delete(user.User{}, 1)

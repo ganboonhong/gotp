@@ -1,5 +1,6 @@
 CREATE TABLE users (
     id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
+    account TEXT NOT NULL,
+    password TEXT NOT NULL,
     created_at INTEGER
 )
