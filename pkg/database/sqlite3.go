@@ -6,39 +6,31 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func (db *database) Create(value interface{}) error {
-	if err := db.tx.Create(value).Error; err != nil {
+func (DB *DB) Create(value interface{}) error {
+	gormDB := DB.DB
+	if err := gormDB.Create(value).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (db *database) getDb() *gorm.DB {
-	return db.tx
-}
-
-func (db *database) Find(id int, i interface{}) error {
-	tx := db.tx.First(i, uint(id))
-	if tx.Error != nil {
-		return tx.Error
+func (DB *DB) Find(ID int, i interface{}) error {
+	gormDB := DB.DB
+	if err := gormDB.First(i, uint(ID)).Error; err != nil {
+		return err
 	}
 	return nil
 }
 
-func (db *database) SetTransaction(tx *gorm.DB) {
-	db.tx = tx
-}
-
-func (db *database) Update(i interface{}) error {
-	tx := db.tx.Model(i).Updates(i)
-
-	if tx.Error != nil {
-		return tx.Error
+func (DB *DB) Update(i interface{}) error {
+	gormDB := DB.DB
+	if err := gormDB.Model(i).Updates(i).Error; err != nil {
+		return err
 	}
-
 	return nil
 }
 
-func (db *database) Delete(i interface{}, id int) *gorm.DB {
-	return db.tx.Delete(i, uint(id))
+func (DB *DB) Delete(i interface{}, ID int) *gorm.DB {
+	gormDB := DB.DB
+	return gormDB.Delete(i, uint(ID))
 }

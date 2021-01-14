@@ -9,6 +9,7 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -32,18 +33,14 @@ func (suite *UserSuite) SetupSuite() {
 // TestCRUDUser tests (C)reate, (R)ead, (U)pdate, (D)elete user entity
 func (suite *UserSuite) TestCRUDUser() {
 	gormDB, _ := gorm.Open(sqlite.Open(testutil.DSN), &gorm.Config{})
-	config := &Config{
-		Database: gormDB,
-	}
-	suiteRepo := NewDb(config)
-	db := suiteRepo.getDb()
+	suiteRepo := NewDb(gormDB)
 
-	db.Transaction(func(tx *gorm.DB) error {
-		suiteRepo.SetTransaction(tx)
+	suiteRepo.Transaction(func(tx *gorm.DB) error {
 		// create
+		password, _ := bcrypt.GenerateFromPassword([]byte("plainpassword"), bcrypt.MinCost)
 		u := &user.User{
 			Account:  "Test",
-			Password: "HashedPasswordxxoo%%",
+			Password: string(password),
 		}
 		err := suiteRepo.Create(&u)
 		rq.NoError(err)

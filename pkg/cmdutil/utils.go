@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ganboonhong/gotp/pkg/database"
 	"github.com/joho/godotenv"
 )
 
@@ -115,10 +116,12 @@ func GetConfigTest() Config {
 
 type Factory struct {
 	GetConfig func() Config
+	DB        *database.DB
 }
 
 func NewFactory() *Factory {
 	return &Factory{
 		GetConfig,
+		database.NewDb(nil),
 	}
 }

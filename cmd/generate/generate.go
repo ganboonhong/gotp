@@ -8,6 +8,7 @@ import (
 	gotp "github.com/ganboonhong/gotp/pkg"
 	"github.com/ganboonhong/gotp/pkg/cmdutil"
 	errMsg "github.com/ganboonhong/gotp/pkg/error"
+	"github.com/ganboonhong/gotp/pkg/user"
 	"github.com/spf13/cobra"
 )
 
@@ -39,7 +40,7 @@ func generate(f *cmdutil.Factory, chooseType bool) (string, error) {
 	var msg string
 
 	cfg := f.GetConfig()
-	if cfg.DbUser == "" || cfg.DbPassword == "" {
+	if cfg.DbUser == "" {
 		msg := errMsg.NoAccount()
 		fmt.Fprintf(os.Stderr, msg)
 		os.Exit(1)
@@ -60,9 +61,13 @@ func generate(f *cmdutil.Factory, chooseType bool) (string, error) {
 		}
 	}
 
+	db := f.DB
+
+	u := &user.User{}
+	db.Find(1, u)
+
 	if OTPType == 0 {
 		otp := gotp.NewDefaultTOTP("MCWFKC6VWWVIDGYC4ZULRKSLQWC7GROF")
-		// otp := gotp.NewDefaultTOTP("MCWFKC6VWWVIDGYC4ZULRKSLQWC7GROF")
 		msg = fmt.Sprintf("Your OTP: %s", otp.Now())
 	} else {
 		msg = "HOTP not implemented yet"

@@ -22,7 +22,13 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 				{
 					Name: "Account",
 					Prompt: &survey.Input{
-						Message: "Please key in your account name",
+						Message: "Please key in your Account",
+					},
+				},
+				{
+					Name: "Password",
+					Prompt: &survey.Password{
+						Message: "Please key in your Password",
 					},
 				},
 				{
@@ -35,6 +41,7 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 			}
 			answer := struct {
 				Account      string
+				Password     string
 				EnableBackup bool
 			}{}
 
@@ -72,9 +79,10 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 				return err
 			}
 
-			db := database.NewDb(&database.Config{})
+			db := database.NewDb(nil)
 			u := &user.User{
-				Account: answer.Account,
+				Account:  answer.Account,
+				Password: answer.Password,
 			}
 
 			err = db.Create(u)
