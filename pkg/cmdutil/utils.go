@@ -122,6 +122,6 @@ type Factory struct {
 func NewFactory() *Factory {
 	return &Factory{
 		GetConfig,
-		database.NewDb(nil),
+		database.NewDB(nil),
 	}
 }

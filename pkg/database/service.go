@@ -1,7 +1,6 @@
 package database
 
 import (
-	"log"
 	"path/filepath"
 
 	"gorm.io/gorm"
@@ -17,16 +16,11 @@ type DB struct {
 
 var dsn = "data/DB.sqlite"
 
-func SetDSN(dsn string) {
-	dsn = dsn
-}
-
-func NewDb(DBArg *gorm.DB) *DB {
+func NewDB(DBArg *gorm.DB) *DB {
 	newDB := DBArg
 	var err error
 	if newDB == nil {
 		dsn, _ := filepath.Abs(dsn)
-		log.Println(dsn)
 		newDB, err = gorm.Open(sqlite.Open(dsn), &gorm.Config{})
 		if err != nil {
 			panic(err.Error())

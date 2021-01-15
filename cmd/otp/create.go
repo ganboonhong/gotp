@@ -48,7 +48,7 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 
 			survey.Ask(qs, &answer)
 
-			db := database.NewDb(nil)
+			db := database.NewDB(nil)
 			p := &parameter.Parameter{
 				UserID:  userId,
 				Secret:  answer.Secret,

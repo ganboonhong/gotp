@@ -33,33 +33,33 @@ func (suite *UserSuite) SetupSuite() {
 // TestCRUDUser tests (C)reate, (R)ead, (U)pdate, (D)elete user entity
 func (suite *UserSuite) TestCRUDUser() {
 	gormDB, _ := gorm.Open(sqlite.Open(testutil.DSN), &gorm.Config{})
-	suiteRepo := NewDb(gormDB)
+	DB := NewDB(gormDB)
 
-	suiteRepo.Transaction(func(tx *gorm.DB) error {
+	DB.Transaction(func(tx *gorm.DB) error {
 		// create
 		password, _ := bcrypt.GenerateFromPassword([]byte("plainpassword"), bcrypt.MinCost)
 		u := &user.User{
 			Account:  "Test",
 			Password: string(password),
 		}
-		err := suiteRepo.Create(&u)
+		err := DB.Create(&u)
 		rq.NoError(err)
 		suite.Equal(1, int(u.ID))
 
 		// find
 		u = &user.User{}
-		err = suiteRepo.Find(1, u)
+		err = DB.Find(1, u)
 		require.NoError(t, err)
 		suite.Equal(uint(1), u.ID)
 
 		// update
 		expected := "Test2"
 		u.Account = expected
-		err = suiteRepo.Update(u)
+		err = DB.Update(u)
 		suite.Equal(expected, u.Account)
 
 		// delete
-		execution := suiteRepo.Delete(user.User{}, 1)
+		execution := DB.Delete(user.User{}, 1)
 		suite.Equal(1, int(execution.RowsAffected))
 		require.NoError(t, execution.Error)
 		return nil
