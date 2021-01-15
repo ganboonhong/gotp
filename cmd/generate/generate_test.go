@@ -20,35 +20,33 @@ var (
 	rq *require.Assertions
 )
 
-type Suite struct {
+type s struct {
 	suite.Suite
 }
 
-func (suite *Suite) SetupSuite() {
+func (suite *s) SetupSuite() {
 	testutil.SetupDB()
 
 	t = suite.T()
 	rq = suite.Require()
 }
 
-func (suite *Suite) TearDownSuite() {
+func (suite *s) TearDownSuite() {
 	testutil.TearDownDB()
 }
 
-// func TestGenerateTOTP(t *testing.T) {
-func (suite *Suite) TestGenerateTOTP() {
+func (suite *s) TestGenerateTOTP() {
 	gormDB, _ := gorm.Open(sqlite.Open(testutil.DSN), &gorm.Config{})
-	suiteRepo := database.NewDb(gormDB)
+	DB := database.NewDB(gormDB)
 	f := &cmdutil.Factory{
 		GetConfig: cmdutil.GetConfigTest,
-		DB:        suiteRepo,
+		DB:        DB,
 	}
 
-	u := &user.User{
+	DB.Create(&user.User{
 		Account:  "Test",
 		Password: "hashedpassword",
-	}
-	err := suiteRepo.Create(&u)
+	})
 
 	chooseType := false
 
@@ -61,5 +59,5 @@ func (suite *Suite) TestGenerateTOTP() {
 }
 
 func TestSuite(t *testing.T) {
-	suite.Run(t, new(Suite))
+	suite.Run(t, new(s))
 }

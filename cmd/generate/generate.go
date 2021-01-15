@@ -61,10 +61,10 @@ func generate(f *cmdutil.Factory, chooseType bool) (string, error) {
 		}
 	}
 
-	db := f.DB
+	DB := f.DB
 
 	u := &user.User{}
-	db.Find(1, u)
+	DB.Find(1, u)
 
 	if OTPType == 0 {
 		otp := gotp.NewDefaultTOTP("MCWFKC6VWWVIDGYC4ZULRKSLQWC7GROF")

@@ -46,7 +46,6 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 			}{}
 
 			survey.Ask(qs, &answer)
-			log.Println(answer)
 
 			if answer.EnableBackup {
 				var cloudDrive string
@@ -79,7 +78,7 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 				return err
 			}
 
-			db := database.NewDb(nil)
+			db := database.NewDB(nil)
 			u := &user.User{
 				Account:  answer.Account,
 				Password: answer.Password,
