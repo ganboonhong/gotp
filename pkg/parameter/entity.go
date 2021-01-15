@@ -10,7 +10,7 @@ const (
 )
 
 type Parameter struct {
-	UserId  uint
+	UserID  uint
 	Secret  string
 	Issuer  string
 	Account string

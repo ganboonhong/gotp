@@ -11,10 +11,14 @@ import (
 var DSN = "test.sqlite"
 
 func SetupDB() {
-	os.Remove(DSN)
+	os.Create(DSN)
 	m, _ := migrate.New(
 		"file://../../migration",
 		"sqlite3://"+DSN,
 	)
 	m.Up()
+}
+
+func TearDownDB() {
+	os.Remove(DSN)
 }
