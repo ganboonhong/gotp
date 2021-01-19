@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -13,8 +14,7 @@ import (
 )
 
 type Config struct {
-	DbUser     string
-	DbPassword string
+	UserID int
 }
 
 const (
@@ -100,17 +100,16 @@ func RandomSecret(length int) string {
 
 func GetConfig() Config {
 	godotenv.Load()
+	userID, _ := strconv.Atoi(os.Getenv("UserID"))
 
 	return Config{
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
+		userID,
 	}
 }
 
 func GetConfigTest() Config {
 	return Config{
-		DbUser:     "johndoe",
-		DbPassword: "Pwd1234!!",
+		UserID: 1,
 	}
 }
 

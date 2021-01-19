@@ -5,6 +5,7 @@ import (
 
 	"github.com/ganboonhong/gotp/pkg/cmdutil"
 	"github.com/ganboonhong/gotp/pkg/database"
+	"github.com/ganboonhong/gotp/pkg/parameter"
 	"github.com/ganboonhong/gotp/pkg/testutil"
 	"github.com/ganboonhong/gotp/pkg/user"
 	_ "github.com/golang-migrate/migrate/v4/database/sqlite3"
@@ -42,10 +43,16 @@ func (suite *s) TestGenerateTOTP() {
 		GetConfig: cmdutil.GetConfigTest,
 		DB:        DB,
 	}
-
-	DB.Create(&user.User{
+	u := &user.User{
 		Account:  "Test",
 		Password: "hashedpassword",
+	}
+	DB.Create(u)
+	DB.Create(&parameter.Parameter{
+		UserID:  u.ID,
+		Secret:  "HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ",
+		Issuer:  "Google",
+		Account: "user@gmail.com",
 	})
 
 	chooseType := false

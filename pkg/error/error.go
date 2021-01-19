@@ -17,3 +17,16 @@ func NoAccount() string {
 	msg, _ = glamour.Render(msg, "dark")
 	return msg
 }
+
+// NoAccount returns a message that indicates user has no parameter to generate OTP
+func NoParameter() string {
+
+	msg := heredoc.Doc(`
+		Please setup your OTP parameter with:
+		~~~js
+		$ gotp otp create
+		~~~
+	`)
+	msg, _ = glamour.Render(msg, "dark")
+	return msg
+}

@@ -2,6 +2,7 @@ package user
 
 import (
 	"log"
+	"strconv"
 
 	survey "github.com/AlecAivazis/survey/v2"
 	"github.com/ganboonhong/gotp/pkg/cmdutil"
@@ -70,21 +71,20 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 				}
 			}
 
-			envVars := map[string]string{
-				"DB_USER": answer.Account,
-			}
-			err := godotenv.Write(envVars, ".env")
-			if err != nil {
-				return err
-			}
-
 			db := database.NewDB(nil)
 			u := &user.User{
 				Account:  answer.Account,
 				Password: answer.Password,
 			}
 
-			err = db.Create(u)
+			err := db.Create(u)
+			if err != nil {
+				return err
+			}
+			envVars := map[string]string{
+				"UserID": strconv.FormatUint(uint64(u.ID), 10),
+			}
+			err = godotenv.Write(envVars, ".env")
 			if err != nil {
 				return err
 			}
