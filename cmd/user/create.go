@@ -71,13 +71,13 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 				}
 			}
 
-			db := database.NewDB(nil)
+			DB := database.NewDB(nil)
 			u := &user.User{
 				Account:  answer.Account,
 				Password: answer.Password,
 			}
 
-			err := db.Create(u)
+			err := DB.Create(u)
 			if err != nil {
 				return err
 			}
