@@ -36,6 +36,10 @@ func (suite *s) TearDownSuite() {
 	testutil.TearDownDB()
 }
 
+func TestSuite(t *testing.T) {
+	suite.Run(t, new(s))
+}
+
 func (suite *s) TestGenerateTOTP() {
 	gormDB, _ := gorm.Open(sqlite.Open(testutil.DSN), &gorm.Config{})
 	DB := database.NewDB(gormDB)
@@ -63,8 +67,4 @@ func (suite *s) TestGenerateTOTP() {
 	}
 
 	suite.Contains(msg, "Your OTP: ")
-}
-
-func TestSuite(t *testing.T) {
-	suite.Run(t, new(s))
 }

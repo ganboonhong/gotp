@@ -19,19 +19,27 @@ var (
 	rq *require.Assertions
 )
 
-type UserSuite struct {
+type s struct {
 	suite.Suite
 }
 
-func (suite *UserSuite) SetupSuite() {
+func (suite *s) SetupSuite() {
 	testutil.SetupDB()
 
 	t = suite.T()
 	rq = suite.Require()
 }
 
+func (suite *s) TearDownSuite() {
+	testutil.TearDownDB()
+}
+
+func TestSuite(t *testing.T) {
+	suite.Run(t, new(s))
+}
+
 // TestCRUDUser tests (C)reate, (R)ead, (U)pdate, (D)elete user entity
-func (suite *UserSuite) TestCRUDUser() {
+func (suite *s) TestCRUDUser() {
 	gormDB, _ := gorm.Open(sqlite.Open(testutil.DSN), &gorm.Config{})
 	DB := NewDB(gormDB)
 
@@ -64,8 +72,4 @@ func (suite *UserSuite) TestCRUDUser() {
 		require.NoError(t, execution.Error)
 		return nil
 	})
-}
-
-func TestSuite(t *testing.T) {
-	suite.Run(t, new(UserSuite))
 }

@@ -77,7 +77,6 @@ func generate(f *cmdutil.Factory, chooseType bool) (string, error) {
 	}
 
 	if parameterCount > 1 {
-
 		options := make([]string, parameterCount)
 		for i, v := range parameters {
 			option := fmt.Sprintf("%s (%s)", v.Account, v.Issuer)
@@ -96,7 +95,6 @@ func generate(f *cmdutil.Factory, chooseType bool) (string, error) {
 	}
 
 	if OTPType == 0 {
-		// otp := gotp.NewDefaultTOTP("MCWFKC6VWWVIDGYC4ZULRKSLQWC7GROF")
 		otp := gotp.NewDefaultTOTP(secret)
 		msg = fmt.Sprintf("Your OTP: %s", otp.Now())
 	} else {
