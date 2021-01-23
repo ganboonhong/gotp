@@ -42,17 +42,17 @@ func TestSuite(t *testing.T) {
 
 func (suite *s) TestGenerateTOTP() {
 	gormDB, _ := gorm.Open(sqlite.Open(testutil.DSN), &gorm.Config{})
-	DB := database.NewDB(gormDB)
+	repo := database.NewRepo(gormDB)
 	f := &cmdutil.Factory{
 		GetConfig: cmdutil.GetConfigTest,
-		DB:        DB,
+		Repo:      repo,
 	}
 	u := &user.User{
 		Account:  "Test",
 		Password: "hashedpassword",
 	}
-	DB.Create(u)
-	DB.Create(&parameter.Parameter{
+	repo.Create(u)
+	repo.Create(&parameter.Parameter{
 		UserID:  u.ID,
 		Secret:  "HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ",
 		Issuer:  "Google",

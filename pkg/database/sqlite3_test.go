@@ -41,7 +41,7 @@ func TestSuite(t *testing.T) {
 // TestCRUDUser tests (C)reate, (R)ead, (U)pdate, (D)elete user entity
 func (suite *s) TestCRUDUser() {
 	gormDB, _ := gorm.Open(sqlite.Open(testutil.DSN), &gorm.Config{})
-	DB := NewDB(gormDB)
+	DB := NewRepo(gormDB)
 
 	DB.Transaction(func(tx *gorm.DB) error {
 		// create

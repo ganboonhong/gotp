@@ -64,7 +64,7 @@ func create(f *cmdutil.Factory, a *answer) error {
 		os.Exit(1)
 	}
 
-	db := database.NewDB(f.DB.DB)
+	DB := database.NewRepo(f.Repo.DB)
 	p := &parameter.Parameter{
 		UserID:  uint(cfg.UserID),
 		Secret:  a.Secret,
@@ -72,7 +72,7 @@ func create(f *cmdutil.Factory, a *answer) error {
 		Account: a.Account,
 	}
 
-	err := db.Create(p)
+	err := DB.Create(p)
 	if err != nil {
 		return err
 	}

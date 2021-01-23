@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	genCmd "github.com/ganboonhong/gotp/cmd/generate"
-	otpCmd "github.com/ganboonhong/gotp/cmd/otp"
-	userCmd "github.com/ganboonhong/gotp/cmd/user"
+	"github.com/ganboonhong/gotp/cmd/generate"
+	"github.com/ganboonhong/gotp/cmd/otp"
+	"github.com/ganboonhong/gotp/cmd/user"
 	"github.com/ganboonhong/gotp/pkg/cmdutil"
 	"github.com/spf13/cobra"
 )
@@ -20,9 +20,9 @@ var (
 func Execute() error {
 	f := cmdutil.NewFactory()
 
-	rootCmd.AddCommand(genCmd.New(f))
-	rootCmd.AddCommand(userCmd.New(f))
-	rootCmd.AddCommand(otpCmd.New(f))
+	rootCmd.AddCommand(generate.NewGenereateCmd(f))
+	rootCmd.AddCommand(user.NewUserCmd(f))
+	rootCmd.AddCommand(otp.NewOTPCmd(f))
 
 	return rootCmd.Execute()
 }

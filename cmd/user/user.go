@@ -5,8 +5,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// New returns a command that handle database related operations
-func New(f *cmdutil.Factory) *cobra.Command {
+// NewUserCmd returns a command that handle database related operations
+func NewUserCmd(f *cmdutil.Factory) *cobra.Command {
 	dbCmd := &cobra.Command{
 		Use:   "user",
 		Short: "database related manipulation",

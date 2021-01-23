@@ -45,9 +45,9 @@ func availableAccounts(f *cmdutil.Factory) ([]string, []parameter.Parameter) {
 		os.Exit(1)
 	}
 	u := user.User{}
-	f.DB.Find(cfg.UserID, &u)
+	f.Repo.Find(cfg.UserID, &u)
 	var parameters []parameter.Parameter
-	userParameters := f.DB.DB.Model(&u).Association("Parameters")
+	userParameters := f.Repo.DB.Model(&u).Association("Parameters")
 	userParameters.Find(&parameters)
 	options := make([]string, userParameters.Count())
 
@@ -60,7 +60,7 @@ func availableAccounts(f *cmdutil.Factory) ([]string, []parameter.Parameter) {
 
 func delete(f *cmdutil.Factory, parameters []parameter.Parameter) {
 	for _, v := range parameters {
-		f.DB.DB.
+		f.Repo.DB.
 			Where("user_id = ?", v.UserID).
 			Where("secret = ?", v.Secret).
 			Where("issuer = ?", v.Issuer).

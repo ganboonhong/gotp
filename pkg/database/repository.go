@@ -16,7 +16,3 @@ type Repository interface {
 	Reader
 	Writer
 }
-
-type repo struct {
-	tx *gorm.DB
-}

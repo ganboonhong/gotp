@@ -115,12 +115,12 @@ func GetConfigTest() Config {
 
 type Factory struct {
 	GetConfig func() Config
-	DB        *database.DB
+	Repo      *database.Repo
 }
 
 func NewFactory() *Factory {
 	return &Factory{
 		GetConfig,
-		database.NewDB(nil),
+		database.NewRepo(nil),
 	}
 }

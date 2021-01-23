@@ -5,8 +5,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// New returns a command that handle database related operations
-func New(f *cmdutil.Factory) *cobra.Command {
+// NewOTPCmd returns a command that handle database related operations
+func NewOTPCmd(f *cmdutil.Factory) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "otp",
 		Short: "Create, show, update, delete an OTP info",
