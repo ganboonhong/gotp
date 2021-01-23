@@ -9,15 +9,15 @@ import (
 	"gorm.io/driver/sqlite"
 )
 
-// DB is a wrapper of gorm.DB
-type DB struct {
+// Repo is a wrapper of gorm.Repo
+type Repo struct {
 	*gorm.DB
 }
 
-var dsn = "data/DB.sqlite"
+var dsn = "data/Repo.sqlite"
 
-func NewDB(DBArg *gorm.DB) *DB {
-	newDB := DBArg
+func NewRepo(DB *gorm.DB) *Repo {
+	newDB := DB
 	var err error
 	if newDB == nil {
 		dsn, _ := filepath.Abs(dsn)
@@ -27,7 +27,7 @@ func NewDB(DBArg *gorm.DB) *DB {
 		}
 	}
 
-	return &DB{
+	return &Repo{
 		DB: newDB,
 	}
 }

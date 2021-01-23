@@ -6,31 +6,31 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func (DB *DB) Create(value interface{}) error {
-	gormDB := DB.DB
+func (repo *Repo) Create(value interface{}) error {
+	gormDB := repo.DB
 	if err := gormDB.Create(value).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (DB *DB) Find(ID int, i interface{}) error {
-	gormDB := DB.DB
+func (repo *Repo) Find(ID int, i interface{}) error {
+	gormDB := repo.DB
 	if err := gormDB.First(i, uint(ID)).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (DB *DB) Update(i interface{}) error {
-	gormDB := DB.DB
+func (repo *Repo) Update(i interface{}) error {
+	gormDB := repo.DB
 	if err := gormDB.Model(i).Updates(i).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (DB *DB) Delete(i interface{}, ID int) *gorm.DB {
-	gormDB := DB.DB
+func (repo *Repo) Delete(i interface{}, ID int) *gorm.DB {
+	gormDB := repo.DB
 	return gormDB.Delete(i, uint(ID))
 }

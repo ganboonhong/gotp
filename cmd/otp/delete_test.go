@@ -35,12 +35,12 @@ func (s *deleteOTPSuite) TestDelete() {
 	// arrange
 	var parameters []parameter.Parameter
 	gormDB, _ := gorm.Open(sqlite.Open(testutil.DSN), &gorm.Config{})
-	DAL := database.NewDB(gormDB)
+	repo := database.NewRepo(gormDB)
 	u := user.User{
 		Account:  "FakeAccount",
 		Password: "FakePassword",
 	}
-	DAL.Create(&u)
+	repo.Create(&u)
 	parameters = []parameter.Parameter{
 		{
 			UserID:  u.ID,
@@ -58,10 +58,10 @@ func (s *deleteOTPSuite) TestDelete() {
 	gormDB.Create(&parameters)
 	f := &cmdutil.Factory{
 		GetConfig: cmdutil.GetConfigTest,
-		DB:        DAL,
+		Repo:      repo,
 	}
 
-	userParameters := DAL.DB.Model(&u).Association("Parameters")
+	userParameters := repo.DB.Model(&u).Association("Parameters")
 	s.Equal(2, int(userParameters.Count()))
 
 	// act
@@ -75,9 +75,9 @@ func (s *deleteOTPSuite) TestDelete() {
 	})
 
 	// assert
-	userParameters = DAL.DB.Model(&u).Association("Parameters")
+	userParameters = repo.DB.Model(&u).Association("Parameters")
 	s.Equal(1, int(userParameters.Count()))
-	DAL.DB.Model(&u).Association("Parameters").Find(&parameters)
+	repo.DB.Model(&u).Association("Parameters").Find(&parameters)
 	p := parameters[0]
 	s.Equal("secret2", p.Secret)
 	s.Equal("issuer2", p.Issuer)

@@ -13,8 +13,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// New returns command to generate OTP
-func New(f *cmdutil.Factory) *cobra.Command {
+// NewGenereateCmd returns command to generate OTP
+func NewGenereateCmd(f *cmdutil.Factory) *cobra.Command {
 	var chooseType bool
 	var genCmd = &cobra.Command{
 		Use:   "gen",
@@ -63,13 +63,13 @@ func generate(f *cmdutil.Factory, chooseType bool) (string, error) {
 		}
 	}
 
-	DB := f.DB
+	repo := f.Repo
 	u := &user.User{}
-	DB.Find(cfg.UserID, u)
+	repo.Find(cfg.UserID, u)
 
-	userParameters := DB.Model(&u).Association("Parameters")
+	userParameters := repo.DB.Model(&u).Association("Parameters")
 	parameterCount := userParameters.Count()
-	DB.Model(&u).Association("Parameters").Find(&parameters)
+	repo.DB.Model(&u).Association("Parameters").Find(&parameters)
 
 	if parameterCount == 0 {
 		fmt.Fprintf(os.Stderr, errMsg.NoParameter())

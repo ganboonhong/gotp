@@ -43,12 +43,12 @@ func TestSuite(t *testing.T) {
 func (suite *s) TestCreate() {
 	var parameters []parameter.Parameter
 	gormDB, _ := gorm.Open(sqlite.Open(testutil.DSN), &gorm.Config{})
-	DAL := database.NewDB(gormDB)
+	repo := database.NewRepo(gormDB)
 	u := user.User{
 		Account:  "FakeAccount",
 		Password: "FakePassword",
 	}
-	DAL.Create(&u)
+	repo.Create(&u)
 	secret := "HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ"
 	issuer := "Google"
 	account := "user@google.com"
@@ -59,14 +59,14 @@ func (suite *s) TestCreate() {
 	}
 	f := &cmdutil.Factory{
 		GetConfig: cmdutil.GetConfigTest,
-		DB:        DAL,
+		Repo:      repo,
 	}
 	create(f, a)
 
-	userParameters := DAL.DB.Model(&u).Association("Parameters")
+	userParameters := repo.DB.Model(&u).Association("Parameters")
 	suite.Equal(1, int(userParameters.Count()))
 
-	DAL.DB.Model(&u).Association("Parameters").Find(&parameters)
+	repo.DB.Model(&u).Association("Parameters").Find(&parameters)
 	p := parameters[0]
 	suite.Equal(secret, p.Secret)
 	suite.Equal(issuer, p.Issuer)
