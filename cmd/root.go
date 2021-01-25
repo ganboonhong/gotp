@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/ganboonhong/gotp/cmd/app"
 	"github.com/ganboonhong/gotp/cmd/generate"
 	"github.com/ganboonhong/gotp/cmd/otp"
 	"github.com/ganboonhong/gotp/cmd/user"
@@ -23,6 +24,7 @@ func Execute() error {
 	rootCmd.AddCommand(generate.NewGenereateCmd(f))
 	rootCmd.AddCommand(user.NewUserCmd(f))
 	rootCmd.AddCommand(otp.NewOTPCmd(f))
+	rootCmd.AddCommand(app.NewAppCmd(f))
 
 	return rootCmd.Execute()
 }

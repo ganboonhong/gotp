@@ -14,7 +14,7 @@ type Repo struct {
 	*gorm.DB
 }
 
-var dsn = "data/Repo.sqlite"
+var dsn = "data/db.sqlite"
 
 func NewRepo(DB *gorm.DB) *Repo {
 	newDB := DB

@@ -31,7 +31,7 @@ func TestDeleteOTPTestSuite(t *testing.T) {
 	suite.Run(t, new(deleteOTPSuite))
 }
 
-func (s *deleteOTPSuite) TestDelete() {
+func (s *deleteOTPSuite) TestDeleteOTP() {
 	// arrange
 	var parameters []parameter.Parameter
 	gormDB, _ := gorm.Open(sqlite.Open(testutil.DSN), &gorm.Config{})

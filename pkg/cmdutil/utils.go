@@ -14,10 +14,12 @@ import (
 )
 
 type Config struct {
-	UserID int
+	UserID  int
+	AppName string
 }
 
 const (
+	appName     = "gotp"
 	OtpTypeTotp = "totp"
 	OtpTypeHotp = "hotp"
 )
@@ -103,13 +105,15 @@ func GetConfig() Config {
 	userID, _ := strconv.Atoi(os.Getenv("UserID"))
 
 	return Config{
-		userID,
+		UserID:  userID,
+		AppName: appName,
 	}
 }
 
 func GetConfigTest() Config {
 	return Config{
-		UserID: 1,
+		UserID:  1,
+		AppName: "gotp_test",
 	}
 }
 
