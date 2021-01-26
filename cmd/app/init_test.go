@@ -28,6 +28,7 @@ func (s *initAppSuite) SetupSuite() {
 
 func (s *initAppSuite) TearDownSuite() {
 	// Remove directory created by previous test.
+	// test new repo
 	os.RemoveAll(configDir)
 }
 
