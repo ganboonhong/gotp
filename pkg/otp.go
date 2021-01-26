@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"hash"
 	"math"
-	"strings"
+
+	"github.com/ganboonhong/gotp/pkg/cmdutil"
+	"github.com/ganboonhong/gotp/pkg/parameter"
 )
 
 type Hasher struct {
@@ -24,7 +26,7 @@ type OTP struct {
 func NewOTP(secret string, digits int, hasher *Hasher) OTP {
 	if hasher == nil {
 		hasher = &Hasher{
-			HashName: "sha1",
+			HashName: parameter.DefaultAlgorithm,
 			Digest:   sha1.New,
 		}
 	}
@@ -44,24 +46,28 @@ func (o *OTP) generateOTP(input int) string {
 		panic("input must be positive integer")
 	}
 	hasher := hmac.New(o.hasher.Digest, o.byteSecret())
-	hasher.Write(Itob(input))
+	hasher.Write(cmdutil.Itob(input))
 	hmacHash := hasher.Sum(nil)
 
+	// https://tools.ietf.org/html/rfc4226
+	// 5.4.  Example of HOTP Computation for Digit = 6
 	offset := int(hmacHash[len(hmacHash)-1] & 0xf)
 	code := ((int(hmacHash[offset]) & 0x7f) << 24) |
 		((int(hmacHash[offset+1] & 0xff)) << 16) |
 		((int(hmacHash[offset+2] & 0xff)) << 8) |
 		(int(hmacHash[offset+3]) & 0xff)
 
+	// We then take this number modulo 1,000,000 (10^6)
+	// to generate the 6-digit HOTP value 872921 decimal.
 	code = code % int(math.Pow10(o.digits))
 	return fmt.Sprintf(fmt.Sprintf("%%0%dd", o.digits), code)
 }
 
 func (o *OTP) byteSecret() []byte {
-	missingPadding := len(o.secret) % 8
-	if missingPadding != 0 {
-		o.secret = o.secret + strings.Repeat("=", 8-missingPadding)
-	}
+	// missingPadding := len(o.secret) % 8
+	// if missingPadding != 0 {
+	// 	o.secret = o.secret + strings.Repeat("=", 8-missingPadding)
+	// }
 	bytes, err := base32.StdEncoding.DecodeString(o.secret)
 	if err != nil {
 		panic("decode secret failed")

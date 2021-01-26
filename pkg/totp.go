@@ -1,6 +1,11 @@
 package gotp
 
-import "time"
+import (
+	"time"
+
+	"github.com/ganboonhong/gotp/pkg/cmdutil"
+	"github.com/ganboonhong/gotp/pkg/parameter"
+)
 
 // time-based OTP counters.
 type TOTP struct {
@@ -14,7 +19,7 @@ func NewTOTP(secret string, digits, interval int, hasher *Hasher) *TOTP {
 }
 
 func NewDefaultTOTP(secret string) *TOTP {
-	return NewTOTP(secret, 6, 30, nil)
+	return NewTOTP(secret, parameter.DefaultDigits, parameter.DefaultInterval, nil)
 }
 
 // Generate time OTP of given timestamp
@@ -24,7 +29,7 @@ func (t *TOTP) At(timestamp int) string {
 
 // Generate the current time OTP
 func (t *TOTP) Now() string {
-	return t.At(currentTimestamp())
+	return t.At(cmdutil.CurrentTimestamp())
 }
 
 // Generate the current time OTP and expiration time
@@ -59,9 +64,9 @@ params:
 
 returns: provisioning URI
 */
-func (t *TOTP) ProvisioningUri(accountName, issuerName string) string {
-	return BuildUri(
-		OtpTypeTotp,
+func (t *TOTP) ProvisioningURI(accountName, issuerName string) string {
+	return cmdutil.BuildUri(
+		cmdutil.OtpTypeTotp,
 		t.secret,
 		accountName,
 		issuerName,
