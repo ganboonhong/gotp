@@ -1,6 +1,7 @@
 package app
 
 import (
+	"log"
 	"os"
 	"path/filepath"
 	"testing"
@@ -19,16 +20,16 @@ var (
 )
 
 func (s *initAppSuite) SetupSuite() {
+	log.SetFlags(log.Llongfile)
 	f = &cmdutil.Factory{
 		GetConfig: cmdutil.GetConfigTest,
 		Repo:      nil,
 	}
-	configDir, _ = ConfigDir(f)
+	configDir = ConfigDir(f)
 }
 
 func (s *initAppSuite) TearDownSuite() {
 	// Remove directory created by previous test.
-	// test new repo
 	os.RemoveAll(configDir)
 }
 
@@ -43,11 +44,11 @@ func (s *initAppSuite) TestInitApp() {
 	_, err = os.Stat(configDir)
 	s.Equal(true, !os.IsNotExist(err))
 
-	statusFilePath := filepath.Join(configDir, statusFilename)
+	statusFilePath := filepath.Join(configDir, StatusFilename)
 	_, err = os.Stat(statusFilePath)
 	s.Equal(true, !os.IsNotExist(err))
 
-	DBFilePath := filepath.Join(configDir, dbFilename)
-	_, err = os.Stat(DBFilePath)
+	databasePath := DatabasePath(f)
+	_, err = os.Stat(databasePath)
 	s.Equal(true, !os.IsNotExist(err))
 }

@@ -9,7 +9,7 @@ require (
 	github.com/alecthomas/chroma v0.8.2 // indirect
 	github.com/charmbracelet/glamour v0.2.0
 	github.com/dlclark/regexp2 v1.4.0 // indirect
-	github.com/golang-migrate/migrate/v4 v4.14.1
+	github.com/golang-migrate/migrate/v4 v4.14.2-0.20210131070753-dab829b56480
 	github.com/joho/godotenv v1.3.0
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-sqlite3 v1.14.5
@@ -25,7 +25,6 @@ require (
 	golang.org/x/sys v0.0.0-20201211002650-1f0c578a6b29 // indirect
 	golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf // indirect
 	golang.org/x/text v0.3.4 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/driver/sqlite v1.1.4
 	gorm.io/gorm v1.20.8
 )
