@@ -1,4 +1,4 @@
-package gotp
+package otp
 
 import (
 	"crypto/hmac"

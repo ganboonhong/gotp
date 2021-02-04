@@ -3,56 +3,44 @@ package generate
 import (
 	"testing"
 
-	"github.com/ganboonhong/gotp/pkg/cmdutil"
-	"github.com/ganboonhong/gotp/pkg/database"
+	"github.com/ganboonhong/gotp/pkg/config"
+	"github.com/ganboonhong/gotp/pkg/orm"
 	"github.com/ganboonhong/gotp/pkg/parameter"
 	"github.com/ganboonhong/gotp/pkg/testutil"
 	"github.com/ganboonhong/gotp/pkg/user"
 	_ "github.com/golang-migrate/migrate/v4/database/sqlite3"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
 
-var (
-	t  *testing.T
-	rq *require.Assertions
-)
+var suitename string
 
-type s struct {
+type generateSuite struct {
 	suite.Suite
 }
 
-func (suite *s) SetupSuite() {
-	testutil.SetupDB()
-
-	t = suite.T()
-	rq = suite.Require()
+func (s *generateSuite) BeforeTest(suiteName, testName string) {
+	suitename = suiteName
+	testutil.SetupDB(suitename)
 }
 
-func (suite *s) TearDownSuite() {
-	testutil.TearDownDB()
+func (s *generateSuite) AfterTest(suiteName, testName string) {
+	testutil.TearDownDB(suitename)
 }
 
-func TestSuite(t *testing.T) {
-	suite.Run(t, new(s))
+func GenerateTestSuite(t *testing.T) {
+	suite.Run(t, new(generateSuite))
 }
 
-func (suite *s) TestGenerateTOTP() {
-	gormDB, _ := gorm.Open(sqlite.Open(testutil.DSN), &gorm.Config{})
-	repo := database.NewRepo(gormDB)
-	f := &cmdutil.Factory{
-		GetConfig: cmdutil.GetConfigTest,
-		Repo:      repo,
-	}
+func (s *generateSuite) TestGenerateTOTP() {
+	config := config.NewTestConfig(suitename)
+	orm := orm.New(config)
 	u := &user.User{
 		Account:  "Test",
 		Password: "hashedpassword",
 	}
-	repo.Create(u)
-	repo.Create(&parameter.Parameter{
+	orm.Create(u)
+	orm.Create(&parameter.Parameter{
 		UserID:  u.ID,
 		Secret:  "HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ",
 		Issuer:  "Google",
@@ -61,10 +49,10 @@ func (suite *s) TestGenerateTOTP() {
 
 	chooseType := false
 
-	msg, err := generate(f, chooseType)
+	msg, err := generate(config, chooseType)
 	if err != nil {
-		t.Error(err.Error())
+		s.Fail(err.Error())
 	}
 
-	suite.Contains(msg, "Your OTP: ")
+	s.Contains(msg, "Your OTP: ")
 }

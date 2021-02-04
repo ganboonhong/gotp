@@ -1,12 +1,12 @@
 package user
 
 import (
-	"github.com/ganboonhong/gotp/pkg/cmdutil"
+	"github.com/ganboonhong/gotp/pkg/config"
 	"github.com/spf13/cobra"
 )
 
 // NewUserCmd returns a command that handle database related operations
-func NewUserCmd(f *cmdutil.Factory) *cobra.Command {
+func NewUserCmd(config *config.Config) *cobra.Command {
 	dbCmd := &cobra.Command{
 		Use:   "user",
 		Short: "database related manipulation",
@@ -15,8 +15,7 @@ func NewUserCmd(f *cmdutil.Factory) *cobra.Command {
 		},
 	}
 
-	dbCmd.AddCommand(NewGetCommand())
-	dbCmd.AddCommand(NewCreateCommand(f))
+	dbCmd.AddCommand(NewCreateCommand(config))
 
 	return dbCmd
 }

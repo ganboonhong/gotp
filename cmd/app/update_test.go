@@ -2,11 +2,10 @@ package app
 
 import (
 	"database/sql"
-	"log"
 	"os"
 	"testing"
 
-	"github.com/ganboonhong/gotp/pkg/cmdutil"
+	pkgConfig "github.com/ganboonhong/gotp/pkg/config"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/sqlite3"
 	"github.com/stretchr/testify/suite"
@@ -16,17 +15,12 @@ type updateAppSuite struct {
 	suite.Suite
 }
 
-func (s *updateAppSuite) SetupSuite() {
-	log.SetFlags(log.Llongfile)
-	f = &cmdutil.Factory{
-		GetConfig: cmdutil.GetConfigTest,
-		Repo:      nil,
-	}
-	configDir = ConfigDir(f)
+func (s *updateAppSuite) BeforeTest(suiteName, testName string) {
+	suitename = suiteName
 }
 
-func (s *updateAppSuite) TearDownSuite() {
-	// Remove directory created by previous test.
+func (s *updateAppSuite) AfterTest(suiteName, testName string) {
+	configDir := pkgConfig.NewTestConfig(suitename).Dir()
 	os.RemoveAll(configDir)
 }
 
@@ -36,8 +30,9 @@ func TestUpdateAppSuite(t *testing.T) {
 
 func (s *updateAppSuite) TestUpdateApp() {
 	var m *migrate.Migrate
+	config := pkgConfig.NewTestConfig(suitename)
 	assert := s.Assert()
-	configDir := ConfigDir(f)
+	configDir := config.Dir()
 	count := 0
 
 	err := os.Mkdir(configDir, 0777)
@@ -45,13 +40,13 @@ func (s *updateAppSuite) TestUpdateApp() {
 		assert.FailNow(err.Error())
 	}
 
-	databasePath := DatabasePath(f)
+	databasePath := config.DatabasePath()
 	if _, err = os.Create(databasePath); err != nil {
 		assert.FailNow(err.Error())
 	}
 
-	databaseURL := DatabaseURL(f)
-	if m, err = migrate.New(SourceURL, databaseURL); err != nil {
+	databaseURL := config.DSN()
+	if m, err = migrate.New(pkgConfig.SourceURL, databaseURL); err != nil {
 		assert.FailNow(err.Error())
 	}
 	m.Steps(1)
@@ -72,7 +67,7 @@ func (s *updateAppSuite) TestUpdateApp() {
 	row.Scan(&count)
 	s.Equal(0, count)
 
-	err = updateApp(f)
+	err = updateApp(config)
 	if err != nil {
 		assert.FailNow(err.Error())
 	}

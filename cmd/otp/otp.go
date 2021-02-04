@@ -1,12 +1,12 @@
 package otp
 
 import (
-	"github.com/ganboonhong/gotp/pkg/cmdutil"
+	"github.com/ganboonhong/gotp/pkg/config"
 	"github.com/spf13/cobra"
 )
 
 // NewOTPCmd returns a command that handle database related operations
-func NewOTPCmd(f *cmdutil.Factory) *cobra.Command {
+func NewOTPCmd(config *config.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "otp",
 		Short: "Create, show, update, delete an OTP info",
@@ -15,8 +15,8 @@ func NewOTPCmd(f *cmdutil.Factory) *cobra.Command {
 		},
 	}
 
-	cmd.AddCommand(NewCreateCommand(f))
-	cmd.AddCommand(NewDeleteCommand(f))
+	cmd.AddCommand(NewCreateCommand(config))
+	cmd.AddCommand(NewDeleteCommand(config))
 
 	return cmd
 }

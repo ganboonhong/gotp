@@ -6,29 +6,27 @@ import (
 	"github.com/ganboonhong/gotp/pkg/testutil"
 	_ "github.com/golang-migrate/migrate/v4/database/sqlite3"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	"golang.org/x/crypto/bcrypt"
 )
 
-var (
-	t  *testing.T
-	rq *require.Assertions
-)
+var suitename string
 
-type UserSuite struct {
+type userSuite struct {
 	suite.Suite
 }
 
-func (suite *UserSuite) SetupSuite() {
-	testutil.SetupDB()
-
-	t = suite.T()
-	rq = suite.Require()
+func (suite *userSuite) BeforeTest(suiteName, testName string) {
+	suitename = suiteName
+	testutil.SetupDB(suitename)
 }
 
-// TestCRUDUser tests (C)reate, (R)ead, (U)pdate, (D)elete user entity
-func (suite *UserSuite) TestHashPassword() {
+func (s *userSuite) AfterTest(suiteName, testName string) {
+	testutil.TearDownDB(suitename)
+}
+
+func (suite *userSuite) TestHashPassword() {
+	rq := suite.Require()
 	cleartext := "Secret123!!"
 	password := []byte(cleartext)
 	hashedPassword := []byte(HashPassword(password))
@@ -37,5 +35,5 @@ func (suite *UserSuite) TestHashPassword() {
 }
 
 func TestSuite(t *testing.T) {
-	suite.Run(t, new(UserSuite))
+	suite.Run(t, new(userSuite))
 }

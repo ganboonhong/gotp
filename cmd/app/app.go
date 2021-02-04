@@ -1,11 +1,11 @@
 package app
 
 import (
-	"github.com/ganboonhong/gotp/pkg/cmdutil"
+	"github.com/ganboonhong/gotp/pkg/config"
 	"github.com/spf13/cobra"
 )
 
-func NewAppCmd(f *cmdutil.Factory) *cobra.Command {
+func NewAppCmd(config *config.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "app",
 		Short: "Initialize, update, remove gotp app",
@@ -14,7 +14,7 @@ func NewAppCmd(f *cmdutil.Factory) *cobra.Command {
 		},
 	}
 
-	cmd.AddCommand(NewInitCommand(f))
+	cmd.AddCommand(NewInitCommand(config))
 
 	return cmd
 }

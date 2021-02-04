@@ -1,54 +1,47 @@
 package app
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 	"testing"
 
-	"github.com/ganboonhong/gotp/pkg/cmdutil"
+	"github.com/ganboonhong/gotp/pkg/config"
 	"github.com/stretchr/testify/suite"
 )
+
+var suitename string
 
 type initAppSuite struct {
 	suite.Suite
 }
 
-var (
-	f         *cmdutil.Factory
-	configDir string
-)
-
-func (s *initAppSuite) SetupSuite() {
-	log.SetFlags(log.Llongfile)
-	f = &cmdutil.Factory{
-		GetConfig: cmdutil.GetConfigTest,
-		Repo:      nil,
-	}
-	configDir = ConfigDir(f)
+func (s *initAppSuite) BeforeTest(suiteName, testName string) {
+	suitename = suiteName
 }
 
-func (s *initAppSuite) TearDownSuite() {
-	// Remove directory created by previous test.
+func (s *initAppSuite) AfterTest(suiteName, testName string) {
+	configDir := config.NewTestConfig(suitename).Dir()
 	os.RemoveAll(configDir)
 }
 
-func TestInitAppSuite(t *testing.T) {
+func TestInitApp(t *testing.T) {
 	suite.Run(t, new(initAppSuite))
 }
 
 func (s *initAppSuite) TestInitApp() {
-	err := initApp(f)
+	config := config.NewTestConfig(suitename)
+	configDir := config.Dir()
+	err := InitApp(config)
 	s.Require().NoError(err)
 
 	_, err = os.Stat(configDir)
-	s.Equal(true, !os.IsNotExist(err))
+	s.True(!os.IsNotExist(err))
 
 	statusFilePath := filepath.Join(configDir, StatusFilename)
 	_, err = os.Stat(statusFilePath)
-	s.Equal(true, !os.IsNotExist(err))
+	s.True(!os.IsNotExist(err))
 
-	databasePath := DatabasePath(f)
+	databasePath := config.DatabasePath()
 	_, err = os.Stat(databasePath)
-	s.Equal(true, !os.IsNotExist(err))
+	s.True(!os.IsNotExist(err))
 }

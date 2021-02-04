@@ -4,22 +4,11 @@ import (
 	"fmt"
 	"math/rand"
 	"net/url"
-	"os"
-	"strconv"
 	"strings"
 	"time"
-
-	"github.com/ganboonhong/gotp/pkg/database"
-	"github.com/joho/godotenv"
 )
 
-type Config struct {
-	UserID  int
-	AppName string
-}
-
 const (
-	appName     = "gotp"
 	OtpTypeTotp = "totp"
 	OtpTypeHotp = "hotp"
 )
@@ -98,33 +87,4 @@ func RandomSecret(length int) string {
 	}
 
 	return string(bytes)
-}
-
-func GetConfig() Config {
-	godotenv.Load()
-	userID, _ := strconv.Atoi(os.Getenv("UserID"))
-
-	return Config{
-		UserID:  userID,
-		AppName: appName,
-	}
-}
-
-func GetConfigTest() Config {
-	return Config{
-		UserID:  1,
-		AppName: "gotp_test",
-	}
-}
-
-type Factory struct {
-	GetConfig func() Config
-	Repo      *database.Repo
-}
-
-func NewFactory() *Factory {
-	return &Factory{
-		GetConfig,
-		database.NewRepo(nil),
-	}
 }

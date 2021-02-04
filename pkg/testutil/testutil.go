@@ -1,31 +1,25 @@
 package testutil
 
 import (
-	"fmt"
 	"os"
 
-	"github.com/golang-migrate/migrate/v4"
+	"github.com/ganboonhong/gotp/cmd/app"
+	pkgConfig "github.com/ganboonhong/gotp/pkg/config"
 	_ "github.com/golang-migrate/migrate/v4/database/sqlite3"
 	_ "github.com/golang-migrate/migrate/v4/source/github"
 )
 
 var DSN = "test.sqlite"
 
-func SetupDB() {
-	owner := "ganboonhong"
-	repo := "gotp"
-	path := "migration"
-	sourceURL := fmt.Sprintf("github://%s/%s/%s", owner, repo, path)
-	databaseURL := "sqlite3://" + DSN
+func SetupDB(suitename string) {
+	config := pkgConfig.NewTestConfig(suitename)
 
-	os.Create(DSN)
-	m, err := migrate.New(sourceURL, databaseURL)
-	if err != nil {
-		panic(err.Error())
+	if err := app.InitApp(config); err != nil {
+		panic(err)
 	}
-	m.Up()
 }
 
-func TearDownDB() {
-	os.Remove(DSN)
+func TearDownDB(suitename string) {
+	configDir := pkgConfig.NewTestConfig(suitename).Dir()
+	os.RemoveAll(configDir)
 }

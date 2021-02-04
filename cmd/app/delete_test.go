@@ -1,11 +1,11 @@
 package app
 
 import (
-	"log"
 	"os"
 	"testing"
 
-	"github.com/ganboonhong/gotp/pkg/cmdutil"
+	"github.com/ganboonhong/gotp/pkg/config"
+	pkgConfig "github.com/ganboonhong/gotp/pkg/config"
 	_ "github.com/golang-migrate/migrate/v4/database/sqlite3"
 	"github.com/stretchr/testify/suite"
 )
@@ -14,13 +14,17 @@ type deleteAppSuite struct {
 	suite.Suite
 }
 
-func (s *deleteAppSuite) SetupSuite() {
-	log.SetFlags(log.Llongfile)
-	f = &cmdutil.Factory{
-		GetConfig: cmdutil.GetConfigTest,
-		Repo:      nil,
+func (s *deleteAppSuite) BeforeTest(suiteName, testName string) {
+	suitename = suiteName
+	config := pkgConfig.NewTestConfig(suitename)
+	if err := InitApp(config); err != nil {
+		panic(err)
 	}
-	configDir = ConfigDir(f)
+}
+
+func (s *deleteAppSuite) AfterTest(suiteName, testName string) {
+	configDir := pkgConfig.NewTestConfig(suitename).Dir()
+	os.RemoveAll(configDir)
 }
 
 func TestDeleteAppSuite(t *testing.T) {
@@ -28,11 +32,11 @@ func TestDeleteAppSuite(t *testing.T) {
 }
 
 func (s *deleteAppSuite) TestDeleteApp() {
+	config := config.NewTestConfig(suitename)
+	configDir := config.Dir()
 	assert := s.Assert()
-	if err := initApp(f); err != nil {
-		assert.FailNow(err.Error())
-	}
-	if err := deleteApp(f); err != nil {
+
+	if err := deleteApp(config); err != nil {
 		assert.FailNow(err.Error())
 	}
 	if _, err := os.Stat(configDir); !os.IsNotExist(err) {
