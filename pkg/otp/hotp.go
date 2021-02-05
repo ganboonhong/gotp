@@ -1,4 +1,4 @@
-package gotp
+package otp
 
 import "github.com/ganboonhong/gotp/pkg/cmdutil"
 

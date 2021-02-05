@@ -2,11 +2,10 @@ package app
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 
-	"github.com/ganboonhong/gotp/pkg/cmdutil"
+	pconfig "github.com/ganboonhong/gotp/pkg/config"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/sqlite3"
 	_ "github.com/golang-migrate/migrate/v4/source/github"
@@ -20,16 +19,15 @@ type UserStatus struct {
 
 const (
 	StatusFilename = "status.yaml"
-	SourceURL      = "github://ganboonhong/gotp/migration"
 	dbFilename     = "db.sqlite"
 )
 
-func NewInitCommand(f *cmdutil.Factory) *cobra.Command {
+func NewInitCommand(config *pconfig.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "init",
 		Short: "Initialize application",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := initApp(f); err != nil {
+			if err := InitApp(config); err != nil {
 				return err
 			}
 			return nil
@@ -37,13 +35,13 @@ func NewInitCommand(f *cmdutil.Factory) *cobra.Command {
 	}
 }
 
-// initApp initializes this application by creating required directories and files.
-func initApp(f *cmdutil.Factory) error {
-	configDir := ConfigDir(f)
+// InitApp initializes this application by creating required directories and files.
+func InitApp(config *pconfig.Config) error {
+	configDir := config.Dir()
 
 	// Prevent from accidentally overwriting existing configuration.
 	if _, err := os.Stat(configDir); !os.IsNotExist(err) {
-		return errors.New("Configuration already exists.")
+		return errors.New("Configuration already exists.: " + configDir)
 	}
 
 	err := os.Mkdir(configDir, 0777)
@@ -56,39 +54,17 @@ func initApp(f *cmdutil.Factory) error {
 		return err
 	}
 
-	databasePath := DatabasePath(f)
+	databasePath := config.DatabasePath()
 	if _, err = os.Create(databasePath); err != nil {
 		return err
 	}
 
-	databaseURL := DatabaseURL(f)
-	m, err := migrate.New(SourceURL, databaseURL)
+	databaseURL := config.DSN()
+	m, err := migrate.New(pconfig.SourceURL, databaseURL)
 	if err != nil {
 		return err
 	}
 	m.Up()
 
 	return nil
-}
-
-func DatabasePath(f *cmdutil.Factory) string {
-	configDir := ConfigDir(f)
-	return filepath.Join(configDir, dbFilename)
-}
-
-func DatabaseURL(f *cmdutil.Factory) string {
-	databasePath := DatabasePath(f)
-	schema := "sqlite3://file:"
-	return fmt.Sprintf("%s%s", schema, databasePath)
-}
-
-// ConfigDir returns application configuration absolute path.
-// Note that configuration directory is OS-specific.
-// See https://pkg.go.dev/os#UserConfigDir for more information.
-func ConfigDir(f *cmdutil.Factory) string {
-	userConfigDir, err := os.UserConfigDir()
-	if err != nil {
-		panic(err.Error())
-	}
-	return filepath.Join(userConfigDir, f.GetConfig().AppName)
 }

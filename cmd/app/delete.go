@@ -4,18 +4,18 @@ import (
 	"errors"
 	"os"
 
-	"github.com/ganboonhong/gotp/pkg/cmdutil"
+	"github.com/ganboonhong/gotp/pkg/config"
 	_ "github.com/golang-migrate/migrate/v4/database/sqlite3"
 	_ "github.com/golang-migrate/migrate/v4/source/github"
 	"github.com/spf13/cobra"
 )
 
-func NewDeleteCommand(f *cmdutil.Factory) *cobra.Command {
+func NewDeleteCommand(config *config.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "delete",
 		Short: "Delete application",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := deleteApp(f); err != nil {
+			if err := deleteApp(config); err != nil {
 				return err
 			}
 			return nil
@@ -24,8 +24,8 @@ func NewDeleteCommand(f *cmdutil.Factory) *cobra.Command {
 }
 
 // deleteApp runs migrations to update database schema
-func deleteApp(f *cmdutil.Factory) error {
-	configDir := ConfigDir(f)
+func deleteApp(config *config.Config) error {
+	configDir := config.Dir()
 	if _, err := os.Stat(configDir); os.IsNotExist(err) {
 		return errors.New("Application not found")
 	}

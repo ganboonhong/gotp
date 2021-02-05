@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	survey "github.com/AlecAivazis/survey/v2"
-	"github.com/ganboonhong/gotp/pkg/cmdutil"
-	"github.com/ganboonhong/gotp/pkg/database"
+	"github.com/ganboonhong/gotp/pkg/config"
+	"github.com/ganboonhong/gotp/pkg/orm"
 	"github.com/ganboonhong/gotp/pkg/user"
 	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
@@ -14,7 +14,7 @@ import (
 )
 
 // NewCreateCommand creates new user
-func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
+func NewCreateCommand(config *config.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "create",
 		Short: "Create new user",
@@ -71,13 +71,13 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 				}
 			}
 
-			repo := database.NewRepo(nil)
+			orm := orm.New(config)
 			u := &user.User{
 				Account:  answer.Account,
 				Password: answer.Password,
 			}
 
-			err := repo.Create(u)
+			err := orm.Create(u)
 			if err != nil {
 				return err
 			}

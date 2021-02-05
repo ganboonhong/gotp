@@ -3,44 +3,45 @@ package otp
 import (
 	"testing"
 
-	"github.com/ganboonhong/gotp/pkg/cmdutil"
-	"github.com/ganboonhong/gotp/pkg/database"
+	"github.com/ganboonhong/gotp/pkg/config"
+	"github.com/ganboonhong/gotp/pkg/orm"
 	"github.com/ganboonhong/gotp/pkg/parameter"
 	"github.com/ganboonhong/gotp/pkg/testutil"
 	"github.com/ganboonhong/gotp/pkg/user"
 	_ "github.com/mattn/go-sqlite3"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 
 	"github.com/stretchr/testify/suite"
 )
+
+var suitename string
 
 type deleteOTPSuite struct {
 	suite.Suite
 }
 
-func (s *deleteOTPSuite) SetupSuite() {
-	testutil.SetupDB()
+func (s *deleteOTPSuite) BeforeTest(suiteName, testName string) {
+	suitename = suiteName
+	testutil.SetupDB(suitename)
 }
 
-func (s *deleteOTPSuite) TearDownSuite() {
-	testutil.TearDownDB()
+func (s *deleteOTPSuite) AfterTest(suiteName, testName string) {
+	testutil.TearDownDB(suitename)
 }
 
-func TestDeleteOTPTestSuite(t *testing.T) {
+func TestDeleteOTP(t *testing.T) {
 	suite.Run(t, new(deleteOTPSuite))
 }
 
 func (s *deleteOTPSuite) TestDeleteOTP() {
 	// arrange
+	config := config.NewTestConfig(suitename)
+	orm := orm.New(config)
 	var parameters []parameter.Parameter
-	gormDB, _ := gorm.Open(sqlite.Open(testutil.DSN), &gorm.Config{})
-	repo := database.NewRepo(gormDB)
 	u := user.User{
 		Account:  "FakeAccount",
 		Password: "FakePassword",
 	}
-	repo.Create(&u)
+	orm.Create(&u)
 	parameters = []parameter.Parameter{
 		{
 			UserID:  u.ID,
@@ -55,17 +56,13 @@ func (s *deleteOTPSuite) TestDeleteOTP() {
 			Account: "account2",
 		},
 	}
-	gormDB.Create(&parameters)
-	f := &cmdutil.Factory{
-		GetConfig: cmdutil.GetConfigTest,
-		Repo:      repo,
-	}
+	orm.Create(&parameters)
 
-	userParameters := repo.DB.Model(&u).Association("Parameters")
+	userParameters := orm.DB.Model(&u).Association("Parameters")
 	s.Equal(2, int(userParameters.Count()))
 
 	// act
-	delete(f, []parameter.Parameter{
+	delete(orm, []parameter.Parameter{
 		{
 			UserID:  u.ID,
 			Secret:  "secret1",
@@ -75,9 +72,9 @@ func (s *deleteOTPSuite) TestDeleteOTP() {
 	})
 
 	// assert
-	userParameters = repo.DB.Model(&u).Association("Parameters")
+	userParameters = orm.DB.Model(&u).Association("Parameters")
 	s.Equal(1, int(userParameters.Count()))
-	repo.DB.Model(&u).Association("Parameters").Find(&parameters)
+	orm.DB.Model(&u).Association("Parameters").Find(&parameters)
 	p := parameters[0]
 	s.Equal("secret2", p.Secret)
 	s.Equal("issuer2", p.Issuer)

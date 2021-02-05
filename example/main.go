@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	gotp "github.com/ganboonhong/gotp/pkg"
 	"github.com/ganboonhong/gotp/pkg/cmdutil"
+	"github.com/ganboonhong/gotp/pkg/otp"
 )
 
 func main() {
@@ -15,7 +15,7 @@ func main() {
 
 func defaultTOTPUsage() {
 	// otp := gotp.NewDefaultTOTP("4S62BZNFXXSZLCRO")
-	otp := gotp.NewDefaultTOTP("MCWFKC6VWWVIDGYC4ZULRKSLQWC7GROF")
+	otp := otp.NewDefaultTOTP("MCWFKC6VWWVIDGYC4ZULRKSLQWC7GROF")
 
 	fmt.Println("current one-time password is:", otp.Now())
 	// fmt.Println("one-time password of timestamp 0 is:", otp.At(0))
@@ -25,7 +25,7 @@ func defaultTOTPUsage() {
 }
 
 func defaultHOTPUsage() {
-	otp := gotp.NewDefaultHOTP("4S62BZNFXXSZLCRO")
+	otp := otp.NewDefaultHOTP("4S62BZNFXXSZLCRO")
 
 	fmt.Println("one-time password of counter 0 is:", otp.At(0))
 	fmt.Println(otp.ProvisioningURI("demoAccountName", "issuerName", 1))

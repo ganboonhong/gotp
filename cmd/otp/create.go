@@ -5,10 +5,10 @@ import (
 	"os"
 
 	survey "github.com/AlecAivazis/survey/v2"
-	"github.com/ganboonhong/gotp/pkg/cmdutil"
 
-	"github.com/ganboonhong/gotp/pkg/database"
+	"github.com/ganboonhong/gotp/pkg/config"
 	errMsg "github.com/ganboonhong/gotp/pkg/error"
+	"github.com/ganboonhong/gotp/pkg/orm"
 	"github.com/ganboonhong/gotp/pkg/parameter"
 
 	"github.com/spf13/cobra"
@@ -21,7 +21,7 @@ type answer struct {
 }
 
 // NewCreateCommand creates new user
-func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
+func NewCreateCommand(config *config.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "create",
 		Short: "Create OTP",
@@ -29,7 +29,7 @@ func NewCreateCommand(f *cmdutil.Factory) *cobra.Command {
 			q := questions()
 			a := answer{}
 			survey.Ask(q, &a)
-			return create(f, &a)
+			return create(config, &a)
 		},
 	}
 }
@@ -57,22 +57,21 @@ func questions() []*survey.Question {
 	}
 }
 
-func create(f *cmdutil.Factory, a *answer) error {
-	cfg := f.GetConfig()
-	if cfg.UserID == 0 {
+func create(config *config.Config, a *answer) error {
+	if config.UserID == 0 {
 		fmt.Fprintf(os.Stderr, errMsg.NoAccount())
 		os.Exit(1)
 	}
 
-	DB := database.NewRepo(f.Repo.DB)
+	orm := orm.New(config)
 	p := &parameter.Parameter{
-		UserID:  uint(cfg.UserID),
+		UserID:  uint(config.UserID),
 		Secret:  a.Secret,
 		Issuer:  a.Issuer,
 		Account: a.Account,
 	}
 
-	err := DB.Create(p)
+	err := orm.Create(p)
 	if err != nil {
 		return err
 	}

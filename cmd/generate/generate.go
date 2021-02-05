@@ -5,22 +5,23 @@ import (
 	"os"
 
 	survey "github.com/AlecAivazis/survey/v2"
-	gotp "github.com/ganboonhong/gotp/pkg"
-	"github.com/ganboonhong/gotp/pkg/cmdutil"
+	"github.com/ganboonhong/gotp/pkg/config"
 	errMsg "github.com/ganboonhong/gotp/pkg/error"
+	"github.com/ganboonhong/gotp/pkg/orm"
+	"github.com/ganboonhong/gotp/pkg/otp"
 	"github.com/ganboonhong/gotp/pkg/parameter"
 	"github.com/ganboonhong/gotp/pkg/user"
 	"github.com/spf13/cobra"
 )
 
 // NewGenereateCmd returns command to generate OTP
-func NewGenereateCmd(f *cmdutil.Factory) *cobra.Command {
+func NewGenereateCmd(config *config.Config) *cobra.Command {
 	var chooseType bool
 	var genCmd = &cobra.Command{
 		Use:   "gen",
 		Short: "Generate an OPT",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			msg, err := generate(f, chooseType)
+			msg, err := generate(config, chooseType)
 			if err != nil {
 				panic(err.Error())
 			}
@@ -35,15 +36,14 @@ func NewGenereateCmd(f *cmdutil.Factory) *cobra.Command {
 	return genCmd
 }
 
-func generate(f *cmdutil.Factory, chooseType bool) (string, error) {
+func generate(config *config.Config, chooseType bool) (string, error) {
 	var OTPType int
 	var err error
 	var msg string
 	var secret string
 	var parameters []parameter.Parameter
 
-	cfg := f.GetConfig()
-	if cfg.UserID == 0 {
+	if config.UserID == 0 {
 		fmt.Fprintf(os.Stderr, errMsg.NoAccount())
 		os.Exit(1)
 	}
@@ -63,13 +63,13 @@ func generate(f *cmdutil.Factory, chooseType bool) (string, error) {
 		}
 	}
 
-	repo := f.Repo
+	orm := orm.New(config)
 	u := &user.User{}
-	repo.Find(cfg.UserID, u)
+	orm.Find(config.UserID, u)
 
-	userParameters := repo.DB.Model(&u).Association("Parameters")
+	userParameters := orm.DB.Model(&u).Association("Parameters")
 	parameterCount := userParameters.Count()
-	repo.DB.Model(&u).Association("Parameters").Find(&parameters)
+	orm.DB.Model(&u).Association("Parameters").Find(&parameters)
 
 	if parameterCount == 0 {
 		fmt.Fprintf(os.Stderr, errMsg.NoParameter())
@@ -95,7 +95,7 @@ func generate(f *cmdutil.Factory, chooseType bool) (string, error) {
 	}
 
 	if OTPType == 0 {
-		otp := gotp.NewDefaultTOTP(secret)
+		otp := otp.NewDefaultTOTP(secret)
 		msg = fmt.Sprintf("Your OTP: %s", otp.Now())
 	} else {
 		msg = "HOTP not implemented yet"
