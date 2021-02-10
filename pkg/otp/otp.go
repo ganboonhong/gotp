@@ -8,7 +8,6 @@ import (
 	"hash"
 	"math"
 
-	"github.com/ganboonhong/gotp/pkg/cmdutil"
 	"github.com/ganboonhong/gotp/pkg/parameter"
 )
 
@@ -46,7 +45,7 @@ func (o *OTP) generateOTP(input int) string {
 		panic("input must be positive integer")
 	}
 	hasher := hmac.New(o.hasher.Digest, o.byteSecret())
-	hasher.Write(cmdutil.Itob(input))
+	hasher.Write(Itob(input))
 	hmacHash := hasher.Sum(nil)
 
 	// https://tools.ietf.org/html/rfc4226
@@ -64,10 +63,6 @@ func (o *OTP) generateOTP(input int) string {
 }
 
 func (o *OTP) byteSecret() []byte {
-	// missingPadding := len(o.secret) % 8
-	// if missingPadding != 0 {
-	// 	o.secret = o.secret + strings.Repeat("=", 8-missingPadding)
-	// }
 	bytes, err := base32.StdEncoding.DecodeString(o.secret)
 	if err != nil {
 		panic("decode secret failed")

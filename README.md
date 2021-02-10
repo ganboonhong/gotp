@@ -55,7 +55,7 @@ hotp.ProvisioningURI("demoAccountName", "issuerName", 1)
 
 ```Go
 secretLength := 16
-cmdutil.RandomSecret(secretLength) // LMT4URYNZKEWZRAA
+opt.RandomSecret(secretLength) // LMT4URYNZKEWZRAA
 ```
 
 ### Google Authenticator Compatible

@@ -3,12 +3,11 @@ package main
 import (
 	"fmt"
 
-	"github.com/ganboonhong/gotp/pkg/cmdutil"
 	"github.com/ganboonhong/gotp/pkg/otp"
 )
 
 func main() {
-	fmt.Println("Random secret:", cmdutil.RandomSecret(16))
+	fmt.Println("Random secret:", otp.RandomSecret(16))
 	defaultTOTPUsage()
 	// defaultHOTPUsage()
 }

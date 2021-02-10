@@ -3,7 +3,6 @@ package otp
 import (
 	"testing"
 
-	"github.com/ganboonhong/gotp/pkg/cmdutil"
 	"github.com/ganboonhong/gotp/pkg/parameter"
 	"github.com/stretchr/testify/assert"
 )
@@ -12,7 +11,7 @@ var totp = NewDefaultTOTP("4S62BZNFXXSZLCRO")
 
 func TestTOTP_Now(t *testing.T) {
 	// arrange
-	expected := totp.At(cmdutil.CurrentTimestamp())
+	expected := totp.At(CurrentTimestamp())
 	err := "TOTP generate otp error!"
 
 	// act
@@ -24,7 +23,7 @@ func TestTOTP_Now(t *testing.T) {
 
 func TestTOTP_NowWithExpiration(t *testing.T) {
 	otp, exp := totp.NowWithExpiration()
-	cts := cmdutil.CurrentTimestamp()
+	cts := CurrentTimestamp()
 	if otp != totp.Now() {
 		t.Error("TOTP generate otp error!")
 	}

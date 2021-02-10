@@ -1,7 +1,5 @@
 package otp
 
-import "github.com/ganboonhong/gotp/pkg/cmdutil"
-
 // HMAC-based OTP counters.
 type HOTP struct {
 	OTP
@@ -48,8 +46,8 @@ params:
 returns: provisioning URI
 */
 func (h *HOTP) ProvisioningURI(accountName, issuerName string, initialCount int) string {
-	return cmdutil.BuildUri(
-		cmdutil.OtpTypeHotp,
+	return BuildUri(
+		OtpTypeHotp,
 		h.secret,
 		accountName,
 		issuerName,

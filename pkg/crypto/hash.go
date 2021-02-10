@@ -1,15 +1,13 @@
-package user
+package crypto
 
 import (
-	"log"
-
 	"golang.org/x/crypto/bcrypt"
 )
 
 func HashPassword(password []byte) string {
 	hash, err := bcrypt.GenerateFromPassword(password, bcrypt.MinCost)
 	if err != nil {
-		log.Fatal(err.Error())
+		panic(err)
 	}
 	return string(hash)
 }

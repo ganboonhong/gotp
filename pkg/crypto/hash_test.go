@@ -1,4 +1,4 @@
-package user
+package crypto
 
 import (
 	"testing"
@@ -12,20 +12,20 @@ import (
 
 var suitename string
 
-type userSuite struct {
+type hashSuite struct {
 	suite.Suite
 }
 
-func (suite *userSuite) BeforeTest(suiteName, testName string) {
+func (suite *hashSuite) BeforeTest(suiteName, testName string) {
 	suitename = suiteName
 	testutil.SetupDB(suitename)
 }
 
-func (s *userSuite) AfterTest(suiteName, testName string) {
+func (s *hashSuite) AfterTest(suiteName, testName string) {
 	testutil.TearDownDB(suitename)
 }
 
-func (suite *userSuite) TestHashPassword() {
+func (suite *hashSuite) TestHashPassword() {
 	rq := suite.Require()
 	cleartext := "Secret123!!"
 	password := []byte(cleartext)
@@ -35,5 +35,5 @@ func (suite *userSuite) TestHashPassword() {
 }
 
 func TestSuite(t *testing.T) {
-	suite.Run(t, new(userSuite))
+	suite.Run(t, new(hashSuite))
 }
