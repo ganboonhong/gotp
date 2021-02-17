@@ -29,7 +29,7 @@ func (suite *hashSuite) TestHashPassword() {
 	rq := suite.Require()
 	cleartext := "Secret123!!"
 	password := []byte(cleartext)
-	hashedPassword := []byte(HashPassword(password))
+	hashedPassword := HashPassword(password)
 	err := bcrypt.CompareHashAndPassword(hashedPassword, password)
 	rq.NoError(err)
 }

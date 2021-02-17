@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	// "github.com/joho/godotenv"
 )
 
 const (
@@ -28,7 +27,7 @@ func New() *Config {
 	// 	panic(err)
 	// }
 
-	// TODO; Get UserID from status.yaml
+	// TODO: Get UserID from status.yaml
 	return &Config{
 		UserID:  1,
 		AppName: appName,

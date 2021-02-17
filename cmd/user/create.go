@@ -6,6 +6,7 @@ import (
 
 	survey "github.com/AlecAivazis/survey/v2"
 	"github.com/ganboonhong/gotp/pkg/config"
+	"github.com/ganboonhong/gotp/pkg/crypto"
 	"github.com/ganboonhong/gotp/pkg/orm"
 	"github.com/ganboonhong/gotp/pkg/user"
 	"github.com/joho/godotenv"
@@ -23,7 +24,7 @@ func NewCreateCommand(config *config.Config) *cobra.Command {
 				{
 					Name: "Account",
 					Prompt: &survey.Input{
-						Message: "Please key in your Account",
+						Message: "Please key in your Account Name",
 					},
 				},
 				{
@@ -72,9 +73,10 @@ func NewCreateCommand(config *config.Config) *cobra.Command {
 			}
 
 			orm := orm.New(config)
+			password := []byte(answer.Password)
 			u := &user.User{
 				Account:  answer.Account,
-				Password: answer.Password,
+				Password: string(crypto.HashPassword(password)),
 			}
 
 			err := orm.Create(u)

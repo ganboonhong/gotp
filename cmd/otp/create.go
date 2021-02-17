@@ -7,6 +7,7 @@ import (
 	survey "github.com/AlecAivazis/survey/v2"
 
 	"github.com/ganboonhong/gotp/pkg/config"
+	"github.com/ganboonhong/gotp/pkg/crypto"
 	errMsg "github.com/ganboonhong/gotp/pkg/error"
 	"github.com/ganboonhong/gotp/pkg/orm"
 	"github.com/ganboonhong/gotp/pkg/parameter"
@@ -66,7 +67,7 @@ func create(config *config.Config, a *answer) error {
 	orm := orm.New(config)
 	p := &parameter.Parameter{
 		UserID:  uint(config.UserID),
-		Secret:  a.Secret,
+		Secret:  string(crypto.HashPassword([]byte(a.Secret))),
 		Issuer:  a.Issuer,
 		Account: a.Account,
 	}

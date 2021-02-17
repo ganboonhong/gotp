@@ -12,6 +12,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/stretchr/testify/suite"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type otpCreateSuite struct {
@@ -57,7 +58,8 @@ func (s *otpCreateSuite) TestCreate() {
 
 	orm.DB.Model(&u).Association("Parameters").Find(&parameters)
 	p := parameters[0]
-	s.Equal(secret, p.Secret)
+	err := bcrypt.CompareHashAndPassword([]byte(p.Secret), []byte(secret))
+	s.Require().NoError(err)
 	s.Equal(issuer, p.Issuer)
 	s.Equal(account, p.Account)
 }
