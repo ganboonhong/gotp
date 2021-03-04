@@ -58,16 +58,17 @@ func questions() []*survey.Question {
 	}
 }
 
-func create(config *config.Config, a *answer) error {
-	if config.UserID == 0 {
+func create(c *config.Config, a *answer) error {
+	if c.UserID == 0 {
 		fmt.Fprintf(os.Stderr, errMsg.NoAccount())
 		os.Exit(1)
 	}
 
-	orm := orm.New(config)
+	orm := orm.New(c)
+	secret := crypto.Encrypt(a.Secret, config.Key)
 	p := &parameter.Parameter{
-		UserID:  uint(config.UserID),
-		Secret:  string(crypto.HashPassword([]byte(a.Secret))),
+		UserID:  uint(c.UserID),
+		Secret:  secret,
 		Issuer:  a.Issuer,
 		Account: a.Account,
 	}
