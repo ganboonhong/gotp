@@ -20,7 +20,8 @@ func createHash(key string) string {
 	return hex.EncodeToString(s)
 }
 
-func Encrypt(data string, key string) string {
+// Encrypt encrypts plaintext and  returns encrypted hexadecimal string
+func Encrypt(plaintext string, key string) string {
 	h := createHash(key)
 	block, err := aes.NewCipher([]byte(h))
 	if err != nil {
@@ -35,14 +36,13 @@ func Encrypt(data string, key string) string {
 	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
 		panic(err)
 	}
-	ciphertext := gcm.Seal(nonce, nonce, []byte(data), nil)
+	ciphertext := gcm.Seal(nonce, nonce, []byte(plaintext), nil)
 	return hex.EncodeToString(ciphertext)
-	// return string(ciphertext)
 }
 
-func Decrypt(data string, key string) string {
-	// bytes := []byte(data)
-	bytes, err := hex.DecodeString(data)
+// Decrypt decrypts given encrypted hexadecimal string and returns plaintext
+func Decrypt(encrypted string, key string) string {
+	bytes, err := hex.DecodeString(encrypted)
 	if err != nil {
 		panic(err)
 	}
