@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/ganboonhong/gotp/pkg/config"
+	"github.com/ganboonhong/gotp/pkg/crypto"
 	"github.com/ganboonhong/gotp/pkg/orm"
 	"github.com/ganboonhong/gotp/pkg/parameter"
 	"github.com/ganboonhong/gotp/pkg/testutil"
@@ -12,7 +13,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/stretchr/testify/suite"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type otpCreateSuite struct {
@@ -35,8 +35,8 @@ func TestOTPCreate(t *testing.T) {
 
 func (s *otpCreateSuite) TestCreate() {
 	var parameters []parameter.Parameter
-	config := config.NewTestConfig(suitename)
-	orm := orm.New(config)
+	c := config.NewTestConfig(suitename)
+	orm := orm.New(c)
 	u := user.User{
 		Account:  "FakeAccount",
 		Password: "FakePassword",
@@ -51,15 +51,15 @@ func (s *otpCreateSuite) TestCreate() {
 		Account: account,
 	}
 
-	create(config, a)
+	create(c, a)
 
 	userParameters := orm.DB.Model(&u).Association("Parameters")
 	s.Equal(1, int(userParameters.Count()))
 
 	orm.DB.Model(&u).Association("Parameters").Find(&parameters)
 	p := parameters[0]
-	err := bcrypt.CompareHashAndPassword([]byte(p.Secret), []byte(secret))
-	s.Require().NoError(err)
+	decryptedSecret := crypto.Decrypt(p.Secret, config.Key)
+	s.Equal(secret, decryptedSecret)
 	s.Equal(issuer, p.Issuer)
 	s.Equal(account, p.Account)
 }

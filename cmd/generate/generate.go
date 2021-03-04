@@ -6,6 +6,7 @@ import (
 
 	survey "github.com/AlecAivazis/survey/v2"
 	"github.com/ganboonhong/gotp/pkg/config"
+	"github.com/ganboonhong/gotp/pkg/crypto"
 	errMsg "github.com/ganboonhong/gotp/pkg/error"
 	"github.com/ganboonhong/gotp/pkg/orm"
 	"github.com/ganboonhong/gotp/pkg/otp"
@@ -36,14 +37,14 @@ func NewGenereateCmd(config *config.Config) *cobra.Command {
 	return genCmd
 }
 
-func generate(config *config.Config, chooseType bool) (string, error) {
+func generate(c *config.Config, chooseType bool) (string, error) {
 	var OTPType int
 	var err error
 	var msg string
-	var secret string
+	var encrytpedSecret string
 	var parameters []parameter.Parameter
 
-	if config.UserID == 0 {
+	if c.UserID == 0 {
 		fmt.Fprintf(os.Stderr, errMsg.NoAccount())
 		os.Exit(1)
 	}
@@ -63,9 +64,9 @@ func generate(config *config.Config, chooseType bool) (string, error) {
 		}
 	}
 
-	orm := orm.New(config)
+	orm := orm.New(c)
 	u := &user.User{}
-	orm.Find(config.UserID, u)
+	orm.Find(c.UserID, u)
 
 	userParameters := orm.DB.Model(&u).Association("Parameters")
 	parameterCount := userParameters.Count()
@@ -89,12 +90,13 @@ func generate(config *config.Config, chooseType bool) (string, error) {
 			Options: options,
 		}
 		survey.AskOne(prompt, &selectedOption)
-		secret = parameters[selectedOption].Secret
+		encrytpedSecret = parameters[selectedOption].Secret
 	} else {
-		secret = parameters[0].Secret
+		encrytpedSecret = parameters[0].Secret
 	}
 
 	if OTPType == 0 {
+		secret := crypto.Decrypt(encrytpedSecret, config.Key)
 		otp := otp.NewDefaultTOTP(secret)
 		msg = fmt.Sprintf("Your OTP: %s", otp.Now())
 	} else {

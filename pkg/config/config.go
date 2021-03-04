@@ -13,6 +13,7 @@ const (
 	appName     = "gotp"
 	dbFilename  = "db.sqlite"
 	testAppName = "gotp_test"
+	Key         = "78b8d028113fd29e496d428347f89254"
 )
 
 type Config struct {
@@ -21,12 +22,6 @@ type Config struct {
 }
 
 func New() *Config {
-	// godotenv.Load()
-	// userID, err := strconv.Atoi(os.Getenv("UserID"))
-	// if err != nil {
-	// 	panic(err)
-	// }
-
 	// TODO: Get UserID from status.yaml
 	return &Config{
 		UserID:  1,
