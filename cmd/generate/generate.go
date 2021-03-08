@@ -1,8 +1,10 @@
 package generate
 
 import (
+	"errors"
 	"fmt"
 	"os"
+	"time"
 
 	survey "github.com/AlecAivazis/survey/v2"
 	"github.com/ganboonhong/gotp/pkg/config"
@@ -26,13 +28,19 @@ func NewGenereateCmd(config *config.Config) *cobra.Command {
 			if err != nil {
 				panic(err.Error())
 			}
-			fmt.Println(msg)
+
+			ticker := time.Tick(time.Second)
+			for i := 30; i > 0; i-- {
+				<-ticker
+				fmt.Printf("\r %s, expires in  %d sec ", msg, i)
+			}
+			fmt.Println()
 
 			return nil
 		},
 	}
 
-	genCmd.Flags().BoolVarP(&chooseType, "type", "t", false, "Select OTP type (defaults to Time-based OTP)")
+	genCmd.Flags().BoolVarP(&chooseType, "type", "t", false, "Select OTP type")
 
 	return genCmd
 }
@@ -99,9 +107,8 @@ func generate(c *config.Config, chooseType bool) (string, error) {
 		secret := crypto.Decrypt(encrytpedSecret, config.Key)
 		otp := otp.NewDefaultTOTP(secret)
 		msg = fmt.Sprintf("Your OTP: %s", otp.Now())
-	} else {
-		msg = "HOTP not implemented yet"
+		return msg, nil
 	}
 
-	return msg, nil
+	return "", errors.New("HOTP not implemented yet")
 }
