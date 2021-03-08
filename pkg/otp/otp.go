@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"hash"
 	"math"
+	"strings"
 
 	"github.com/ganboonhong/gotp/pkg/parameter"
 )
@@ -63,9 +64,10 @@ func (o *OTP) generateOTP(input int) string {
 }
 
 func (o *OTP) byteSecret() []byte {
-	bytes, err := base32.StdEncoding.DecodeString(o.secret)
+	secret := strings.ToUpper(o.secret)
+	bytes, err := base32.StdEncoding.DecodeString(secret)
 	if err != nil {
-		panic("decode secret failed")
+		panic(err)
 	}
 	return bytes
 }
