@@ -7,6 +7,7 @@ require (
 	github.com/MakeNowJust/heredoc v1.0.0
 	github.com/Netflix/go-expect v0.0.0-20201125194554-85d881c3777e // indirect
 	github.com/alecthomas/chroma v0.8.2 // indirect
+	github.com/atotto/clipboard v0.1.4
 	github.com/charmbracelet/glamour v0.2.0
 	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/golang-migrate/migrate/v4 v4.14.2-0.20210131070753-dab829b56480

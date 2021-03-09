@@ -3,6 +3,7 @@ package otp
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	survey "github.com/AlecAivazis/survey/v2"
 
@@ -65,7 +66,8 @@ func create(c *config.Config, a *answer) error {
 	}
 
 	orm := orm.New(c)
-	secret := crypto.Encrypt(a.Secret, config.Key)
+	secret := strings.ReplaceAll(a.Secret, " ", "")
+	secret = crypto.Encrypt(secret, config.Key)
 	p := &parameter.Parameter{
 		UserID:  uint(c.UserID),
 		Secret:  secret,
