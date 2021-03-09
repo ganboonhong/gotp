@@ -1,9 +1,12 @@
 package generate
 
 import (
+	"log"
 	"testing"
 
+	"github.com/atotto/clipboard"
 	"github.com/ganboonhong/gotp/pkg/config"
+	"github.com/ganboonhong/gotp/pkg/crypto"
 	"github.com/ganboonhong/gotp/pkg/orm"
 	"github.com/ganboonhong/gotp/pkg/parameter"
 	"github.com/ganboonhong/gotp/pkg/testutil"
@@ -20,6 +23,7 @@ type generateSuite struct {
 }
 
 func (s *generateSuite) BeforeTest(suiteName, testName string) {
+	log.Printf("bh")
 	suitename = suiteName
 	testutil.SetupDB(suitename)
 }
@@ -28,31 +32,36 @@ func (s *generateSuite) AfterTest(suiteName, testName string) {
 	testutil.TearDownDB(suitename)
 }
 
-func GenerateTestSuite(t *testing.T) {
+func TestGenerateSuite(t *testing.T) {
 	suite.Run(t, new(generateSuite))
 }
 
 func (s *generateSuite) TestGenerateTOTP() {
-	config := config.NewTestConfig(suitename)
-	orm := orm.New(config)
+	c := config.NewTestConfig(suitename)
+	orm := orm.New(c)
 	u := &user.User{
 		Account:  "Test",
 		Password: "hashedpassword",
 	}
 	orm.Create(u)
+
+	secret := crypto.Encrypt("HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ", config.Key)
 	orm.Create(&parameter.Parameter{
 		UserID:  u.ID,
-		Secret:  "HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ",
+		Secret:  secret,
 		Issuer:  "Google",
 		Account: "user@gmail.com",
 	})
 
 	chooseType := false
 
-	msg, err := generate(config, chooseType)
+	msg, err := generate(c, chooseType)
 	if err != nil {
 		s.Fail(err.Error())
 	}
 
-	s.Contains(msg, "Your OTP: ")
+	s.Contains(msg, "(copied)")
+
+	code, err := clipboard.ReadAll()
+	s.Equal(6, len(code))
 }

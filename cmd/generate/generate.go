@@ -7,6 +7,7 @@ import (
 	"time"
 
 	survey "github.com/AlecAivazis/survey/v2"
+	"github.com/atotto/clipboard"
 	"github.com/ganboonhong/gotp/pkg/config"
 	"github.com/ganboonhong/gotp/pkg/crypto"
 	errMsg "github.com/ganboonhong/gotp/pkg/error"
@@ -32,9 +33,9 @@ func NewGenereateCmd(config *config.Config) *cobra.Command {
 			ticker := time.Tick(time.Second)
 			for i := 30; i > 0; i-- {
 				<-ticker
-				fmt.Printf("\r %s, expires in  %d sec ", msg, i)
+				fmt.Printf("\r%s, expires in %ds ", msg, i)
 			}
-			fmt.Println()
+			fmt.Printf("\r OTP expired                   \n")
 
 			return nil
 		},
@@ -106,7 +107,10 @@ func generate(c *config.Config, chooseType bool) (string, error) {
 	if OTPType == 0 {
 		secret := crypto.Decrypt(encrytpedSecret, config.Key)
 		otp := otp.NewDefaultTOTP(secret)
-		msg = fmt.Sprintf("Your OTP: %s", otp.Now())
+		code := otp.Now()
+		clipboard.WriteAll(code)
+
+		msg = fmt.Sprintf("%s (copied)", code)
 		return msg, nil
 	}
 
