@@ -17,15 +17,17 @@ const (
 )
 
 type Config struct {
-	UserID  int
-	AppName string
+	UserID          int
+	AppName         string
+	MigrationSource string
 }
 
 func New() *Config {
 	// TODO: Get UserID from status.yaml
 	return &Config{
-		UserID:  1,
-		AppName: appName,
+		UserID:          1,
+		AppName:         appName,
+		MigrationSource: "file://../../migration",
 	}
 }
 
@@ -33,8 +35,9 @@ func New() *Config {
 // to isolate unit test
 func NewTestConfig(suiteName string) *Config {
 	return &Config{
-		UserID:  1,
-		AppName: suiteName + "_" + testAppName,
+		UserID:          1,
+		AppName:         suiteName + "_" + testAppName,
+		MigrationSource: SourceURL,
 	}
 }
 

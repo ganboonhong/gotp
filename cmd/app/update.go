@@ -32,7 +32,7 @@ func updateApp(config *pkgConfig.Config) error {
 	}
 
 	databaseURL := config.DSN()
-	m, err := migrate.New(pkgConfig.SourceURL, databaseURL)
+	m, err := migrate.New(config.MigrationSource, databaseURL)
 	if err != nil {
 		return err
 	}
