@@ -9,8 +9,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/sqlite3"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-
-	// _ "github.com/golang-migrate/migrate/v4/source/github"
+	_ "github.com/golang-migrate/migrate/v4/source/github"
 	"github.com/spf13/cobra"
 )
 
@@ -62,9 +61,7 @@ func InitApp(config *pconfig.Config) error {
 	}
 
 	databaseURL := config.DSN()
-	// sourceURL := "file://../../migration"
 	m, err := migrate.New(config.MigrationSource, databaseURL)
-	// m, err := migrate.New(pconfig.SourceURL, databaseURL)
 	if err != nil {
 		return err
 	}
