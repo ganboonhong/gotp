@@ -17,6 +17,7 @@ func NewOTPCmd(config *config.Config) *cobra.Command {
 
 	cmd.AddCommand(NewCreateCommand(config))
 	cmd.AddCommand(NewDeleteCommand(config))
+	cmd.AddCommand(NewGenerateCmd(config))
 
 	return cmd
 }

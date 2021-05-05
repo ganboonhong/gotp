@@ -1,7 +1,6 @@
-package generate
+package otp
 
 import (
-	"log"
 	"testing"
 
 	"github.com/atotto/clipboard"
@@ -16,14 +15,11 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-var suitename string
-
 type generateSuite struct {
 	suite.Suite
 }
 
 func (s *generateSuite) BeforeTest(suiteName, testName string) {
-	log.Printf("bh")
 	suitename = suiteName
 	testutil.SetupDB(suitename)
 }
