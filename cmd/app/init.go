@@ -9,7 +9,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/sqlite3"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	_ "github.com/golang-migrate/migrate/v4/source/github"
+
 	"github.com/spf13/cobra"
 )
 
