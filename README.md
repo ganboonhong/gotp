@@ -1,109 +1,71 @@
 # GOTP - The Golang One-Time Password Library
 
-[![build-status][build-status]][build-status] ![MIT License][license-badge]
+[![workflow][build-status]](https://github.com/ganboonhong/gotp/actions)
+![MIT License][license-badge]
 
-GOTP is a Golang package for generating and verifying one-time passwords. It can be used to implement two-factor (2FA) or multi-factor (MFA) authentication methods in anywhere that requires users to log in.
+GOTP aims to be the CLI version of Google Authenticator that we use daily to secure our accounts.
+As a Vim lover, I enjoy having (most of) my work done without leaving keyboard.
 
-Open MFA standards are defined in [RFC 4226][RFC 4226] (HOTP: An HMAC-Based One-Time Password Algorithm) and in [RFC 6238][RFC 6238] (TOTP: Time-Based One-Time Password Algorithm). GOTP implements server-side support for both of these standards.
 
-GOTP was inspired by [PyOTP][PyOTP].
+## Why using it
+**More efficient**
+- In order to get an OTP from your phone when working on computer, we need:
+    - Grab a phone
+    - Unlock it
+    - Find google authenticator app
+    - Read the OTP
+    - Type it on computer
+- Although these action seems can be done less than 30 seconds, repeating it while working on a computer (like what I did) is a pain
+- As a developer, it would be better if I can just get my OTP without leaving a computer (even keyboard)
+- You can feel the efficiency especially when you need to get different OTPs from different issuers frequently
+- Your OTP can be available in 3 seconds by utilizing this application (OTP is copied to clipboard immediately after generated)
 
+**Easy to Backup**
+- All your data are stored in single database file (sqlite file), you just need to keep the file in somewhere secure (cloud, hard disk, ...)
+	- When you lost your phone, your secret is still available on cloud
+	- The [secret](https://github.com/google/google-authenticator/wiki/Key-Uri-Format#secret) of your OTP is encryped in database
+	- Even you lost the file, your OTP still won't be accessible by others
+- Portable backup file means you can make it avialble in any computers you want (working computer, home computer, need to switch to another computer, ...)
+
+*Caveat:\
+Some people might think it goes against the purpose of OTP to store OTP on the same device with the application you’re using.\
+Use it if it brings more advantages to you while this doesn't bother you.*
+
+## Prerequisite
+`go version ^1.14`
 
 ## Installation
-
 ```
-$ go get github.com/xlzd/gotp
+# Clone source code
+$ git clone git@github.com:ganboonhong/gotp.git
+
+# Change to package directory
+$ cd gotp
+
+# Get package dependencies
+$ go get ./...
+
+# Compile and install package
+$ go install
+
+# Setup database
+$ gotp app init
 ```
 
 ## Usage
 
-Check API docs at https://godoc.org/github.com/xlzd/gotp
 
-### Time-based OTPs
+| Create Account    | Delete Account    | Generate OTP 	   |
+| ----------------- | ----------------- | ---------------- |
+| `gotp otp create` | `gotp otp delete` | `gotp [otp] gen` |
 
-```Go
-totp := gotp.NewDefaultTOTP("4S62BZNFXXSZLCRO")
-totp.Now()  // current otp '123456'
-totp.At(1524486261)  // otp of timestamp 1524486261 '123456'
-
-# OTP verified for a given timestamp
-totp.Verify('492039', 1524486261)  // true
-totp.Verify('492039', 1520000000)  // false
-
-// generate a provisioning uri
-totp.ProvisioningURI("demoAccountName", "issuerName")
-// otpauth://totp/issuerName:demoAccountName?secret=4S62BZNFXXSZLCRO&issuer=issuerName
-```
-
-### Counter-based OTPs
-
-```Go
-hotp := gotp.NewDefaultHOTP("4S62BZNFXXSZLCRO")
-hotp.At(0)  // '944181'
-hotp.At(1)  // '770975'
-
-# OTP verified for a given timestamp
-hotp.Verify('944181', 0)  // true
-hotp.Verify('944181', 1)  // false
-
-// generate a provisioning uri
-hotp.ProvisioningURI("demoAccountName", "issuerName", 1)
-// otpauth://hotp/issuerName:demoAccountName?secret=4S62BZNFXXSZLCRO&counter=1&issuer=issuerName
-```
-
-### Generate random secret
-
-```Go
-secretLength := 16
-opt.RandomSecret(secretLength) // LMT4URYNZKEWZRAA
-```
-
-### Google Authenticator Compatible
-
-GOTP works with the Google Authenticator iPhone and Android app, as well as other OTP apps like Authy.
-GOTP includes the ability to generate provisioning URIs for use with the QR Code
-scanner built into these MFA client apps via `otpObj.ProvisioningURI` method:
-
-```Go
-gotp.NewDefaultTOTP("4S62BZNFXXSZLCRO").ProvisioningURI("demoAccountName", "issuerName")
-// otpauth://totp/issuerName:demoAccountName?secret=4S62BZNFXXSZLCRO&issuer=issuerName
-
-
-gotp.NewDefaultHOTP("4S62BZNFXXSZLCRO").ProvisioningURI("demoAccountName", "issuerName", 1)
-// otpauth://hotp/issuerName:demoAccountName?secret=4S62BZNFXXSZLCRO&counter=1&issuer=issuerName
-```
-
-This URL can then be rendered as a QR Code which can then be scanned and added to the users list of OTP credentials.
-
-### Working example
-
-Scan the following barcode with your phone's OTP app (e.g. Google Authenticator):
-
-![Demo](https://user-images.githubusercontent.com/5506906/39129827-0f12b582-473e-11e8-9c19-5e4f071eed26.png)
-
-Now run the following and compare the output:
-
-```Go
-package main
-
-import (
-	"fmt"
-	"github.com/xlzd/gotp"
-)
-
-func main() {
-	fmt.Println("Current OTP is", gotp.NewDefaultTOTP("4S62BZNFXXSZLCRO").Now())
-}
-```
+Since generate OTP command is likely to be used frequently, there is a shorthand `gotp gen` for `gotp otp gen`.
 
 ## License
 
 GOTP is licensed under the [MIT License][License]
 
 
-[build-status]: https://travis-ci.org/xlzd/gotp.svg?branch=master
+[build-status]: https://github.com/ganboonhong/gotp/actions/workflows/go.yml/badge.svg
 [license-badge]:   https://img.shields.io/badge/license-MIT-000000.svg
-[RFC 4226]: https://tools.ietf.org/html/rfc4226 "RFC 4226"
-[RFC 6238]: https://tools.ietf.org/html/rfc6238 "RFC 6238"
-[PyOTP]: https://github.com/pyotp/pyotp
-[License]: https://github.com/xlzd/gotp/blob/master/LICENSE
+[License]: https://github.com/ganboonhong/gotp/blob/master/LICENSE
