@@ -1,4 +1,4 @@
-package generate
+package otp
 
 import (
 	"errors"
@@ -18,8 +18,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// NewGenereateCmd returns command to generate OTP
-func NewGenereateCmd(config *config.Config) *cobra.Command {
+// NewGenerateCmd returns command to generate OTP
+func NewGenerateCmd(config *config.Config) *cobra.Command {
 	var chooseType bool
 	var genCmd = &cobra.Command{
 		Use:   "gen",

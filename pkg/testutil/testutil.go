@@ -9,8 +9,6 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/github"
 )
 
-var DSN = "test.sqlite"
-
 func SetupDB(suitename string) {
 	config := pkgConfig.NewTestConfig(suitename)
 

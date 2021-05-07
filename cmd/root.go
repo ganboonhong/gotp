@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/ganboonhong/gotp/cmd/app"
-	"github.com/ganboonhong/gotp/cmd/generate"
 	"github.com/ganboonhong/gotp/cmd/otp"
 	"github.com/ganboonhong/gotp/cmd/user"
 	"github.com/ganboonhong/gotp/pkg/config"
@@ -18,7 +17,7 @@ var rootCmd = &cobra.Command{
 func Execute() error {
 	config := config.New()
 
-	rootCmd.AddCommand(generate.NewGenereateCmd(config))
+	rootCmd.AddCommand(otp.NewGenerateCmd(config))
 	rootCmd.AddCommand(user.NewUserCmd(config))
 	rootCmd.AddCommand(otp.NewOTPCmd(config))
 	rootCmd.AddCommand(app.NewAppCmd(config))
