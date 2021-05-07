@@ -5,8 +5,6 @@ import (
 
 	"github.com/ganboonhong/gotp/cmd/app"
 	pkgConfig "github.com/ganboonhong/gotp/pkg/config"
-	_ "github.com/golang-migrate/migrate/v4/database/sqlite3"
-	_ "github.com/golang-migrate/migrate/v4/source/github"
 )
 
 func SetupDB(suitename string) {

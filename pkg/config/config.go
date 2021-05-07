@@ -27,7 +27,7 @@ func New() *Config {
 	return &Config{
 		UserID:          1,
 		AppName:         appName,
-		MigrationSource: "file://../../migration",
+		MigrationSource: SourceURL,
 	}
 }
 
@@ -37,7 +37,7 @@ func NewTestConfig(suiteName string) *Config {
 	return &Config{
 		UserID:          1,
 		AppName:         suiteName + "_" + testAppName,
-		MigrationSource: SourceURL,
+		MigrationSource: "file://../../migration",
 	}
 }
 
