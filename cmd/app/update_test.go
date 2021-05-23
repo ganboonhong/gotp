@@ -46,7 +46,7 @@ func (s *updateAppSuite) TestUpdateApp() {
 	}
 
 	databaseURL := config.DSN()
-	if m, err = migrate.New(pkgConfig.SourceURL, databaseURL); err != nil {
+	if m, err = migrate.New(config.MigrationSource, databaseURL); err != nil {
 		assert.FailNow(err.Error())
 	}
 	m.Steps(1)
