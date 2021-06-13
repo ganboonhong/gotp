@@ -21,6 +21,7 @@ import (
 // NewGenerateCmd returns command to generate OTP
 func NewGenerateCmd(config *config.Config) *cobra.Command {
 	// test
+	// another test
 	var chooseType bool
 	var genCmd = &cobra.Command{
 		Use:   "gen",
