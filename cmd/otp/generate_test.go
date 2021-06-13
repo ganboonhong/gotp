@@ -57,7 +57,7 @@ func (s *generateSuite) TestGenerateTOTP() {
 	}
 
 	// test workflow run failing
-	// test again
+	// test again 1
 	s.Contains(msg, "(copied)xx")
 
 	code, err := clipboard.ReadAll()
